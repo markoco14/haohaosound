@@ -4,9 +4,9 @@
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "Next PWA Test",
+    "name": "Hao Hao Sound",
     "description": "Cool app",
-    "short_name": "Next PWA Test",
+    "short_name": "Hao Hao Sound",
     "icons": [
         {
             "src": "/icon-192x192.png",
