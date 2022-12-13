@@ -1,8 +1,15 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { useRef } from 'react'
 
 export default function Home() {
+
+  const clapRef = useRef(null);
+  const cheerRef = useRef(null);
+  const booRef = useRef(null);
+  const drumRef = useRef(null);
+  
   return (
     <div className={styles.container}>
       <Head>
@@ -12,44 +19,75 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+          <h1 className='text-6xl mb-4'>好好你好</h1>
+          <button 
+            className='text-3xl my-4'
+            onClick={()=>{
+            cheerRef.current.pause()
+            cheerRef.current.currentTime = 0;
+            booRef.current.pause()
+            booRef.current.currentTime = 0;
+            drumRef.current.pause()
+            drumRef.current.currentTime = 0;
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+            clapRef.current.play()
+          }}>
+            拍手
+          </button>
+          <button 
+            className='text-3xl my-4'
+            onClick={()=>{
+            clapRef.current.pause()
+            clapRef.current.currentTime = 0;
+            booRef.current.pause()
+            booRef.current.currentTime = 0;
+            drumRef.current.pause()
+            drumRef.current.currentTime = 0;
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+            cheerRef.current.play()
+          }}>
+            歡呼
+          </button>
+          <button 
+            className='text-3xl my-4'
+            onClick={()=>{
+            clapRef.current.pause()
+            clapRef.current.currentTime = 0;
+            cheerRef.current.pause()
+            cheerRef.current.currentTime = 0;
+            drumRef.current.pause()
+            drumRef.current.currentTime = 0;
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+            booRef.current.play()
+          }}>
+            嘘声
+          </button>
+          <button 
+            className='text-3xl my-4'
+            onClick={()=>{
+            clapRef.current.pause()
+            clapRef.current.currentTime = 0;
+            cheerRef.current.pause()
+            cheerRef.current.currentTime = 0;
+            booRef.current.pause()
+            booRef.current.currentTime = 0;
 
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+            drumRef.current.play()
+          }}>
+            擊鼓
+          </button>
+          <audio ref={clapRef} src="audio/clap_hands.mp3">
+            Your browser does not support the <code>audio</code> element.
+          </audio>
+          <audio ref={cheerRef} src="audio/crowd_cheer.mp3">
+            Your browser does not support the <code>audio</code> element.
+          </audio>
+          <audio ref={booRef} src="audio/crowd_boo.mp3">
+            Your browser does not support the <code>audio</code> element.
+          </audio>
+          <audio ref={drumRef} src="audio/joke_drum.mp3">
+            Your browser does not support the <code>audio</code> element.
+          </audio>
       </main>
 
       <footer className={styles.footer}>
