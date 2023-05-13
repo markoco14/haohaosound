@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { useRef } from 'react'
 import Link from 'next/link'
 import React from 'react';
+import Navbar from '../components/Navbar';
 
 export default function Library() {
 	
@@ -46,19 +47,17 @@ export default function Library() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className='min-h-screen bg-gradient-to-b from-slate-900 to-slate-700 flex flex-col text-white'>
-				<nav>
-					<Link href="/">Home</Link>
-					<Link href="/library">Library</Link>
-					<Link href="/lists">My Lists</Link>
-				</nav>
+      <main className='min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col text-white'>
+				<Navbar />
 				<section>
-					<h1 className="text-4xl">List Name Goes Here</h1>
-					<ul>
+					<article className='p-2'>
+						<h1 className="text-2xl">生日快樂皓皓</h1>
+					</article>
+					<ul className="p-2 flex flex-col gap-4">
 						{soundLinks.map((sound, index) => (
 							<li key={index}>
 								<button
-									className='text-5xl my-4'
+									className="w-full bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
 									onClick={() => {
 										elementRefs.current.forEach((ref, refIndex) => {
 											if (refIndex !== index) {

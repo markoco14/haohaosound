@@ -2,8 +2,25 @@ import Head from 'next/head'
 import { useRef } from 'react'
 import Link from 'next/link'
 import React from 'react';
+import Navbar from '../components/Navbar';
+import { supabase } from '../lib/supabaseClient';
 
-export default function Library() {
+
+export async function getServerSideProps() {
+	let { data, error } = await supabase.from('lists')
+	.select('*')
+	.eq('user_id', '0')
+	.single()
+
+	return {
+		props: {
+			list: data
+		},
+	}
+}
+
+export default function Library({ list }) {
+	console.log(list)
 	
 	const soundLinks = [
 		{
@@ -46,21 +63,17 @@ export default function Library() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className='min-h-screen bg-gradient-to-b from-slate-900 to-slate-700 flex flex-col text-white'>
-				<nav className='flex gap-2 p-2'>
-					<Link href="/">Home</Link>
-					<Link href="/library">Library</Link>
-					<Link href="/lists">My Lists</Link>
-				</nav>
+      <main className='min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col text-white'>
+				<Navbar></Navbar>
 				<article className='p-2'>
-					<h2 className='text-2xl'>Your Quick Sound Lists</h2>
-					<p>Make the perfect quick lists for any situation. Choose 6 sounds and play them at the perfect moment.</p>
-					<small>You can make one free list. Please sign in to make more lists.</small>
+					<h1 className='text-2xl'>你的聲音列表</h1>
+					{/* <p>快速列出任何情況。 選擇 6 種聲音在最佳時刻播放。</p> */}
+					{/* <small>*您可以創建一個免費列表。</small> */}
 				</article>
-				<ul className='p-2'>	
-					<Link href="/your-freebie-list">
-						<li className="bg-gray-500 p-4 active:scale-95 active:bg-gray-900 active:rounded-md ease-in-out duration-200 hover:bg-gray-700">
-							A List from Us to You
+				<ul className='p-2'>
+					<Link href={list.url}>
+						<li className="bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md">
+							{list.name}
 						</li>
 					</Link>
 				</ul>
@@ -78,12 +91,12 @@ export default function Library() {
 					then they can sign up if it becomes a problem
 					(perhaps when using a different device like ipad or computer in a classroom)
 				*/}
-				<button
+				{/* <button
 					onClick={() => console.log("it works")}
 					className='absolute bottom-0 left-0 w-full bg-green-700 px-4 py-4 rounded-t-xl active:bg-green-900'
 					>
 					Create New
-				</button>
+				</button> */}
       </main>
     </div>
   )
