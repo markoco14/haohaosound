@@ -5,12 +5,6 @@ import Navbar from '../components/Navbar';
 
 export default function Home() {
 
-  const clapRef = useRef(null);
-  const cheerRef = useRef(null);
-  const booRef = useRef(null);
-  const drumRef = useRef(null);
-  const cricketRef = useRef(null);
-  
   return (
     <div>
       <Head>
