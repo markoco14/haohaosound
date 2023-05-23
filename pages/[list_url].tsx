@@ -4,74 +4,60 @@ import Link from 'next/link'
 import React from 'react';
 import Navbar from '../components/Navbar';
 import { useRouter } from 'next/router';
+import { supabase } from '../lib/supabaseClient';
 
-export default function Library() {
+export async function getServerSideProps(context) {
+	if (context.params.list_url !== 'freelist') {
+		// console.log("not free list")
+		console.log(context.query.list_url)
+		let { data, error } = await supabase
+		.rpc('get_list_by_url', {
+			list_url: context.query.list_url
+		});
+
+		console.log(data)
+		return {
+			props: {
+				list: data
+			},
+		}
+	} else {
+		return { 
+			props: {
+				list: null
+			}
+		}
+	}
+
+}
+
+export default function Library({ list }) {
+	console.log('logging list', list)
 
 	const [sounds, setSounds] = useState([]);
 	
 	const router = useRouter();
-	console.log(router.query.list_id);
+	console.log(router.query.list_url);
 
-	
-
-	
-		
-	// setSounds(soundLinks);
 	
 	useEffect(() => {
 		console.log('using use effect')
-		if (router.query.list_id === 'freelist') {
+		if (router.query.list_url === 'freelist') {
 			console.log(JSON.parse(localStorage.getItem("nonUserList")).sounds)
 			const soundLinks = JSON.parse(localStorage.getItem("nonUserList")).sounds
-			// const soundLinks = [
-			// 	{
-			// 		action: "蟋蟀",
-			// 		link: "audio/crickets.wav"
-			// 	},
-			// 	{
-			// 		action: "放屁",
-			// 		link: "audio/fart.wav"
-			// 	},
-			// ];
 			setSounds(soundLinks);
 			return
 		}
 
-		const soundLinks = [
-			{
-				action: "拍手",
-				link: "audio/clap_hands.mp3"
-			},
-			{
-				action: "歡呼",
-				link: "audio/crowd_cheer.mp3"
-			},
-			{
-				action: "嘘声",
-				link: "audio/crowd_boo.mp3"
-			},
-			{
-				action: "擊鼓",
-				link: "audio/joke_drum.mp3"
-			},
-			{
-				action: "蟋蟀",
-				link: "audio/crickets.wav"
-			},
-			{
-				action: "放屁",
-				link: "audio/fart.wav"
-			},
-		];
-		setSounds(soundLinks);
-	}, [router.query.list_id])
+		
+		setSounds(list);
+	}, [router.query.list_url, list])
 	
 	
 	const elementRefs = useRef([]);
 	sounds?.forEach((_, index) => {
 			elementRefs.current[index] = React.createRef();
 		});
-	// sounds.length > 0 ? console.log('greater') : console.log('not')
 
   return (
     <div>
@@ -104,8 +90,8 @@ export default function Library() {
 										}
 										elementRefs.current[index].current.play()
 									}}
-								>{sound.action}</button>
-								<audio ref={elementRefs.current[index]} src={sound.link}>
+								>{sound.name}</button>
+								<audio ref={elementRefs.current[index]} src={sound.audio_url}>
 									Your browser does not support the <code>audio</code> element.
 								</audio>
 							</li>

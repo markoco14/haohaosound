@@ -57,12 +57,12 @@ export default function Lists({ list }) {
 								localStorage.setItem("nonUserList", JSON.stringify({
 									"name": "freelist", 
 									"sounds": [{
-										action: "蟋蟀",
-										link: "audio/crickets.wav"
+										name: "蟋蟀",
+										audio_url: "audio/crickets.wav"
 									},
 									{
-										action: "放屁",
-										link: "audio/fart.wav"
+										name: "放屁",
+										audio_url: "audio/fart.wav"
 									}]
 								}));
 								// localStorage.removeItem("nonUserList");
@@ -80,14 +80,16 @@ export default function Lists({ list }) {
 					</button>
 				</article>
 				<ul className='p-2 flex flex-col gap-2'>
-						<li className='flex justify-between'>
-							<Link 
-								href={list.url} 
-								className="bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
-							>
-								<span>{list.name}</span>
-							</Link>
-						</li>
+					{/* FREE LIST FROM DB FOR EVERYONE (HAOHAO'S BIRTHDAY LIST) */}
+					<li className='flex justify-between'>
+						<Link 
+							href={list.url} 
+							className="bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
+						>
+							<span>{list.name}</span>
+						</Link>
+					</li>
+					{/* LOCAL LIST IF YOU CHOOSE TO CREATE ONE */}
 					{localList ? 
 						<li className='flex justify-between'>
 							<Link 
@@ -111,9 +113,10 @@ export default function Lists({ list }) {
 						: 
 						null
 					}
+					{/* YOUR PERSONAL LISTS IF REGISTERED WILL GO HERE */}
+					{/* NO CODE FOR THIS YET */}
+					{/* MAKE USER REGISTRATION FIRST */}
 				</ul>
-				
-				
       </main>
     </>
   )
