@@ -33,39 +33,6 @@ export default function Lists({ list }) {
 
 	const [localList, setLocalList] = useState<any>(undefined)
 	// console.log(list)
-	
-	const soundLinks = [
-		{
-			action: "拍手",
-			link: "audio/clap_hands.mp3"
-		},
-		{
-			action: "歡呼",
-			link: "audio/crowd_cheer.mp3"
-		},
-		{
-			action: "嘘声",
-			link: "audio/crowd_boo.mp3"
-		},
-		{
-			action: "擊鼓",
-			link: "audio/joke_drum.mp3"
-		},
-		{
-			action: "蟋蟀",
-			link: "audio/crickets.wav"
-		},
-		{
-			action: "放屁",
-			link: "audio/fart.wav"
-		},
-	];
-
-	const elementRefs = useRef([]);
-
-	soundLinks.forEach((_, index) => {
-    elementRefs.current[index] = React.createRef();
-  });
 
   return (
     <>
@@ -79,23 +46,8 @@ export default function Lists({ list }) {
 				<Navbar></Navbar>
 				<article className='p-2 sm:flex sm:justify-between'>
 					<h1 className='text-2xl'>你的聲音列表</h1>
-					{/* <p>快速列出任何情況。 選擇 6 種聲音在最佳時刻播放。</p> */}
-					{/* <small>*您可以創建一個免費列表。</small> */}
 
 					{/* CREATE BUTTON */}
-					{/* 
-						this button will pop up a modal
-						and let users choose a list title
-						and let them view all the sounds in the library
-						and select each one they want to add
-						it will total how many they have
-						and stop them at 6 sounds
-						users can only store 1 list if no session
-						list stored on device local storage
-						this is fine because they probably won't want to access these lists on devices other than their phones
-						then they can sign up if it becomes a problem
-						(perhaps when using a different device like ipad or computer in a classroom)
-					*/}
 					<button
 						onClick={() => {
 							console.log("it works")
