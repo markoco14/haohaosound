@@ -35,7 +35,8 @@ export default function Library({ list }) {
 	console.log('logging list', list)
 
 	const [sounds, setSounds] = useState([]);
-	
+	const [listName, setListName] = useState('');
+
 	const router = useRouter();
 	console.log(router.query.list_url);
 
@@ -45,10 +46,12 @@ export default function Library({ list }) {
 		if (router.query.list_url === 'freelist') {
 			console.log(JSON.parse(localStorage.getItem("nonUserList")).sounds)
 			const soundLinks = JSON.parse(localStorage.getItem("nonUserList")).sounds
+			setListName(JSON.parse(localStorage.getItem("nonUserList")).name)
 			setSounds(soundLinks);
 			return
+		} else {
+			setListName(list[0].list_name)
 		}
-
 		
 		setSounds(list);
 	}, [router.query.list_url, list])
@@ -71,7 +74,7 @@ export default function Library({ list }) {
 				<Navbar />
 				<section>
 					<article className='p-2'>
-						<h1 className="text-2xl">生日快樂皓皓</h1>
+						<h1 className="text-2xl">{listName}</h1>
 					</article>
 					<ul className="p-2 flex flex-col gap-4">
 						{sounds?.map((sound, index) => (
