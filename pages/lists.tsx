@@ -7,25 +7,26 @@ import { supabase } from "../lib/supabaseClient";
 import { Dialog, Transition } from "@headlessui/react";
 
 export async function getServerSideProps() {
+  // TODO: add user session and get user lists
+  // when I'm ready to get user lists as well
+  // I can add the session user id to the filters
+  // and it can grab the hao hao list along with any user lists
   let { data: listData, error: listError } = await supabase
     .from("lists")
-    .select("*")
+    .select("name, url")
     .eq("user_id", "0")
     .single();
-
-  let { data: soundData, error: soundError } = await supabase
-    .from("sounds")
-    .select("*");
 
   return {
     props: {
       list: listData,
-      sounds: soundData,
+      // sounds: soundData,
     },
   };
 }
 
 export default function Lists({ list, sounds }) {
+  // console.log(list);
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedList, setSelectedList] = useState("");
@@ -36,34 +37,73 @@ export default function Lists({ list, sounds }) {
       console.log("No list found");
       return;
     }
+
+    
     setLocalList(freeList);
-    console.log(freeList);
+    // console.log(freeList);
   }, []);
 
   const [localList, setLocalList] = useState<any>(undefined);
   // console.log(list)
-
-  // get sounds to play for local list
   const localListElementRefs = useRef([]);
 
   if (localList) {
     localList.sounds.forEach((_, index) => {
       localListElementRefs.current[index] = React.createRef();
     });
+
   }
 
+  // get sounds to play for local list
+
   const EditListModal = () => {
+    const [sounds, setSounds] = useState([]);
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const elementRefs = useRef([]);
+
+    const fetchSoundData = async () => {
+      setLoading(true);
+
+      let { data: soundData, error: soundError } = await supabase
+        .from("sounds")
+        .select("name, audio_url");
+
+      if (soundError) {
+        console.log("error");
+      }
+
+      if (soundData) {
+        // console.log("got the data", soundData);
+        setSounds(soundData);
+        soundData.forEach((_, index) => {
+          elementRefs.current[index] = React.createRef();
+        });
+      }
+
+      setLoading(false);
+    };
+
+    useEffect(() => {
+      fetchSoundData();
+    }, []);
+
     return (
-      <article className="p-4 absolute bottom-0 left-0 h-[90vh] w-full bg-blue-900">
+      <article className="p-4 absolute bottom-0 left-0 h-[90vh] w-full bg-slate-800 opacity-95 rounded-t-lg overflow-y-scroll">
         <h2>Edit &quot;{selectedList}&quot;</h2>
         {/* <p>List: {selectedList}</p> */}
         {/* <p>sounds</p> */}
         <p>Selected Sounds</p>
 
-        <ul className="grid grid-cols-3 border-2 border-red-900">
+        {/* sounds currently in the list */}
+        <ul className="mb-4 grid grid-cols-3 gap-2">
           {localList.sounds?.map((sound, index) => (
-            <li key={index}>
+            <li
+              key={index}
+              className="flex justify-between relative bg-slate-500 px-4 py-2"
+            >
               <button
+                className="w-full"
                 onClick={() => {
                   localListElementRefs.current.forEach((ref, refIndex) => {
                     if (refIndex !== index) {
@@ -87,46 +127,121 @@ export default function Lists({ list, sounds }) {
               >
                 Your browser does not support the <code>audio</code> element.
               </audio>
+              <button
+              className='flex items-center absolute right-0'
+                onClick={() => {
+                  console.log("deleting sound", sound);
+                  console.log(localList);
+                  const tempList = localList.sounds.filter(
+                    (localStorageSound, index) => {
+                      return localStorageSound.name != sound.name;
+                    }
+                  );
+
+                  // modify the local list
+                  console.log(tempList);
+                  localList.sounds = tempList;
+                  console.log(localList);
+
+                  // store the modified local list in local storage
+                  localStorage.setItem(
+                    "nonUserList",
+                    JSON.stringify(localList)
+                  );
+
+                  // setLocalList to trigger re-render
+                  setLocalList(JSON.parse(localStorage.getItem("nonUserList")));
+
+                  // setLocalList(localList)
+
+                  // fix element refs
+                  console.log('local list element refs', localListElementRefs.current)
+                  console.log('index match at:', index)
+                  localListElementRefs.current.forEach((ref, index) => {
+                    localListElementRefs.current.pop()
+                  })
+                  console.log(localListElementRefs)
+                  // localListElementRefs.
+                }}
+              >
+                <span className="material-symbols-outlined">
+                  remove
+                </span>
+              </button>
             </li>
           ))}
         </ul>
+        {/* list of all sounds from db */}
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <ul className="mb-4 overflow-y-auto grid grid-cols-2 gap-2 max-h-[400px]">
+            {sounds?.map((sound, index) => (
+              <li key={index} className="relative px-4 py-2 flex items-center justify-center bg-blue-500">
+                {/* sample sounds button */}
+                <button
+                  onClick={() => {
+                    elementRefs.current.forEach((ref, refIndex) => {
+                      if (refIndex !== index) {
+                        elementRefs.current[refIndex].current.pause();
+                        elementRefs.current[refIndex].current.currentTime = 0;
+                      }
+                    });
+                    if (!elementRefs.current[index].current.paused) {
+                      elementRefs.current[index].current.currentTime = 0;
+                    }
+                    elementRefs.current[index].current.play();
+                  }}
+                >
+                  {sound.name}
+                </button>
+                <audio ref={elementRefs.current[index]} src={sound.audio_url}>
+                  Your browser does not support the <code>audio</code> element.
+                </audio>
 
-        {/* <ul className='overflow-y-auto border-2 border-red-900 flex flex-col gap-2'>
-					{sounds?.map((sound, index) => (
-						<li key={index} className="flex justify-between bg-blue-500">
-							<button>
-								{sound.name}
-							</button>
-							<button onClick={() => {
-								console.log('added to list')
-								console.log(sound.name)
-								console.log(sound.audio_url)
+                {/* add sounds button */}
+                <button
+                className='absolute right-0 flex items-center'
+                  onClick={() => {
+                    // console.log("added to list");
+                    // console.log(sound.name);
+                    // console.log(sound.audio_url);
+                    // console.log(localList);
+                    if (localList.sounds.length < 6) {
+                      localList.sounds.push(sound);
+                      localStorage.setItem(
+                        "nonUserList",
+                        JSON.stringify(localList)
+                      );
+                      setLocalList(
+                        JSON.parse(localStorage.getItem("nonUserList"))
+                      );
+                      return;
+                    }
+                    alert("this list is full. delete sounds to add new ones");
+                    console.log('local list element refs', localListElementRefs.current)
 
-								console.log(localList)
+                    // console.log(localList.sounds);
+                  }}
+                >
+                  <span className="material-symbols-outlined">
+                    add
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
 
-							}}>
-								+
-							</button>
-						</li>
-					))}
-				</ul> */}
-
-        <div className=" flex justify-between border-2 border-red-900">
+        <div className="absolute bottom-0 left-0 h-12 w-full flex justify-evenly">
           <button
+          className="w-full bg-green-600 rounded-t-xl"
             onClick={() => {
               setIsEditing(false);
-              setSelectedList(null);
+              // setSelectedList(null);
             }}
           >
-            cancel
-          </button>
-          <button
-            onClick={() => {
-              setIsEditing(false);
-              setSelectedList(null);
-            }}
-          >
-            save
+            Done
           </button>
         </div>
       </article>
@@ -142,6 +257,7 @@ export default function Lists({ list, sounds }) {
           content="Play the perfect sound for every moment."
         />
         <link rel="icon" href="/favicon.ico" />
+
       </Head>
 
       <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col text-white">
@@ -161,12 +277,7 @@ export default function Lists({ list, sounds }) {
                   "nonUserList",
                   JSON.stringify({
                     name: name,
-                    sounds: [
-                      {
-                        name: "蟋蟀",
-                        audio_url: "audio/crickets.wav",
-                      },
-                    ],
+                    sounds: [],
                   })
                 );
 
@@ -180,27 +291,24 @@ export default function Lists({ list, sounds }) {
               );
               setIsOpen(!isOpen);
             }}
-            className="absolute bottom-0 left-0 w-full bg-green-600 px-4 py-4 rounded-t-xl active:bg-green-900 sm:relative sm:max-w-fit sm:rounded-md sm:active:scale-90 ease-in-out duration-200"
+            className="absolute bottom-0 left-0 w-full bg-green-600 h-12 rounded-t-xl active:bg-green-900 sm:relative sm:max-w-fit sm:rounded-md sm:active:scale-90 ease-in-out duration-200"
           >
             Create New
           </button>
         </article>
-        {isEditing ? <EditListModal /> : null}
-        {/* <Dialog open={isOpen} as="div" onClose={() => setIsOpen(false)} className="absolute">
-					<Dialog.Panel>
-						<Dialog.Title>Deactivate account</Dialog.Title>
-						<Dialog.Description>
-							This will permanently deactivate your account
-						</Dialog.Description>
+        {/* {isEditing ? <EditListModal /> : null} */}
+        <Transition
+          show={isEditing}
+          enter="duration-500"
+          enterFrom="top-0 opacity-0"
+          enterTo="bottom-0 opacity-100"
+          leave="duration-300"
+          leaveFrom="bottom-0 opacity-100"
+          leaveTo="top-0 opacity-0"
+        >
+          <EditListModal />
+        </Transition>
 
-						<div>
-							<label>Give your list a title</label>
-							<input />
-						</div>
-
-						<button onClick={() => setIsOpen(false)}>Cancel</button>
-					</Dialog.Panel>
-				</Dialog> */}
         {/* DIALOG TO SET NAME OF LIST */}
 
         <ul className="p-2 flex flex-col gap-2">
@@ -224,7 +332,7 @@ export default function Lists({ list, sounds }) {
               </Link>
               <button
                 onClick={() => {
-                  console.log("editing");
+                  // console.log("editing");
                   setIsEditing(true);
                   setSelectedList(
                     JSON.parse(localStorage.getItem("nonUserList")).name
@@ -233,13 +341,6 @@ export default function Lists({ list, sounds }) {
               >
                 Edit
               </button>
-              <Link
-                href={`/edit/${
-                  JSON.parse(localStorage.getItem("nonUserList")).name
-                }`}
-              >
-                Edit Link
-              </Link>
               <button
                 onClick={() => {
                   localStorage.removeItem("nonUserList");
