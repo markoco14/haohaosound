@@ -27,9 +27,14 @@ export async function getServerSideProps() {
 
 export default function Lists({ list, sounds }) {
   // console.log(list);
-  const [isOpen, setIsOpen] = useState(false);
+
+  const [newListName, setNewListName] = useState<string>("");
+
   const [isEditing, setIsEditing] = useState(false);
   const [selectedList, setSelectedList] = useState("");
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     const freeList = JSON.parse(localStorage.getItem("nonUserList"));
@@ -38,7 +43,6 @@ export default function Lists({ list, sounds }) {
       return;
     }
 
-    
     setLocalList(freeList);
     // console.log(freeList);
   }, []);
@@ -51,7 +55,6 @@ export default function Lists({ list, sounds }) {
     localList.sounds.forEach((_, index) => {
       localListElementRefs.current[index] = React.createRef();
     });
-
   }
 
   // get sounds to play for local list
@@ -93,7 +96,7 @@ export default function Lists({ list, sounds }) {
         <h2>Edit &quot;{selectedList}&quot;</h2>
         {/* <p>List: {selectedList}</p> */}
         {/* <p>sounds</p> */}
-        <p>Selected Sounds</p>
+        <p>Selected Sounds: {localList.sounds.length} / 6</p>
 
         {/* sounds currently in the list */}
         <ul className="mb-4 grid grid-cols-3 gap-2">
@@ -105,6 +108,12 @@ export default function Lists({ list, sounds }) {
               <button
                 className="w-full"
                 onClick={() => {
+                  // STOP DB SOUNDS FROM PLAYING OVER LOCAL LIST SOUNDS
+                  elementRefs.current.forEach((ref, index) => {
+                        elementRefs.current[index].current.pause();
+                        elementRefs.current[index].current.currentTime = 0;
+                    });
+
                   localListElementRefs.current.forEach((ref, refIndex) => {
                     if (refIndex !== index) {
                       localListElementRefs.current[refIndex].current.pause();
@@ -128,7 +137,7 @@ export default function Lists({ list, sounds }) {
                 Your browser does not support the <code>audio</code> element.
               </audio>
               <button
-              className='flex items-center absolute right-0'
+                className="flex items-center absolute right-0"
                 onClick={() => {
                   console.log("deleting sound", sound);
                   console.log(localList);
@@ -152,26 +161,16 @@ export default function Lists({ list, sounds }) {
                   // setLocalList to trigger re-render
                   setLocalList(JSON.parse(localStorage.getItem("nonUserList")));
 
-                  // setLocalList(localList)
-
-                  // fix element refs
-                  console.log('local list element refs', localListElementRefs.current)
-                  console.log('index match at:', index)
                   localListElementRefs.current.forEach((ref, index) => {
-                    localListElementRefs.current.pop()
-                  })
-                  console.log(localListElementRefs)
-                  // localListElementRefs.
+                    localListElementRefs.current.pop();
+                  });
                 }}
               >
-                <span className="material-symbols-outlined">
-                  remove
-                </span>
+                <span className="material-symbols-outlined">remove</span>
               </button>
             </li>
           ))}
         </ul>
-
 
         {/* list of all sounds from db */}
         {loading ? (
@@ -179,10 +178,23 @@ export default function Lists({ list, sounds }) {
         ) : (
           <ul className="mb-4 overflow-y-auto grid grid-cols-2 gap-2 max-h-[400px]">
             {sounds?.map((sound, index) => (
-              <li key={index} className={`relative px-4 py-2 flex items-center justify-center bg-blue-500`}>
+              // TODO: CHANGE STYLES IF SOUND IN LOCAL LIST
+              <li
+                key={index}
+                className={`
+                relative px-4 py-2 flex items-center justify-center
+                ${localList.sounds.find(localSound => localSound.name === sound.name) ? 'bg-gray-700 shadow-inner' : 'bg-blue-500'}
+                `}
+              >
                 {/* sample sounds button */}
                 <button
                   onClick={() => {
+                    // STOP LOCAL LIST SOUNDS FROM PLAYING OVER DB SOUNDS
+                    localListElementRefs.current.forEach((ref, index) => {
+                      localListElementRefs.current[index].current.pause();
+                      localListElementRefs.current[index].current.currentTime = 0;
+                    })
+
                     elementRefs.current.forEach((ref, refIndex) => {
                       if (refIndex !== index) {
                         elementRefs.current[refIndex].current.pause();
@@ -198,31 +210,30 @@ export default function Lists({ list, sounds }) {
                   {sound.name}
                 </button>
 
-
                 <audio ref={elementRefs.current[index]} src={sound.audio_url}>
                   Your browser does not support the <code>audio</code> element.
                 </audio>
 
                 {/* add sounds button */}
                 <button
-                className='absolute right-0 flex items-center'
+                  className="absolute right-0 flex items-center"
                   onClick={() => {
                     // CHECK IF LIST IS ALREADY 6 SOUNDS LONG (FULL)
-                    if (localList.sounds.length < 6) {  
-
+                    if (localList.sounds.length < 6) {
                       // CHECK IF SOUND ALREADY IN LIST
-                      const soundInList = localList.sounds.find((listSound, index) => {
-                        if (listSound.name === sound.name) {
-                          return listSound
+                      const soundInList = localList.sounds.find(
+                        (listSound, index) => {
+                          if (listSound.name === sound.name) {
+                            return listSound;
+                          }
                         }
-                      })
-                      
+                      );
+
                       // checks if sound in list and returns out of function
                       if (soundInList) {
-                        alert('this sound already in set. please choose another one')
-                        return
+                        return;
                       }
-                      
+
                       // ADD SOUND TO LIST IF NOT ALREADY IN
                       localList.sounds.push(sound);
                       localStorage.setItem(
@@ -239,9 +250,7 @@ export default function Lists({ list, sounds }) {
                     alert("this list is full. delete sounds to add new ones");
                   }}
                 >
-                  <span className="material-symbols-outlined">
-                    add
-                  </span>
+                  <span className="material-symbols-outlined">add</span>
                 </button>
               </li>
             ))}
@@ -250,7 +259,7 @@ export default function Lists({ list, sounds }) {
 
         <div className="absolute bottom-0 left-0 h-12 w-full flex justify-evenly">
           <button
-          className="w-full bg-green-600 rounded-t-xl"
+            className="w-full bg-green-600 rounded-t-xl"
             onClick={() => {
               setIsEditing(false);
               // setSelectedList(null);
@@ -272,7 +281,6 @@ export default function Lists({ list, sounds }) {
           content="Play the perfect sound for every moment."
         />
         <link rel="icon" href="/favicon.ico" />
-
       </Head>
 
       <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col text-white">
@@ -283,28 +291,7 @@ export default function Lists({ list, sounds }) {
           {/* CREATE NEW LIST BUTTON */}
           <button
             onClick={() => {
-              const previouslySaved = localStorage.getItem("nonUserList");
-
-              if (!previouslySaved) {
-                let name = prompt("You are creating a new list");
-
-                localStorage.setItem(
-                  "nonUserList",
-                  JSON.stringify({
-                    name: name,
-                    sounds: [],
-                  })
-                );
-
-                setLocalList(JSON.parse(localStorage.getItem("nonUserList")));
-
-                return;
-              }
-
-              alert(
-                "You already have one free list. Edit that one or delete it to make a new one."
-              );
-              setIsOpen(!isOpen);
+              setIsCreating(true);
             }}
             className="absolute bottom-0 left-0 w-full bg-green-600 h-12 rounded-t-xl active:bg-green-900 sm:relative sm:max-w-fit sm:rounded-md sm:active:scale-90 ease-in-out duration-200"
           >
@@ -345,6 +332,7 @@ export default function Lists({ list, sounds }) {
                 {localList.name}
               </Link>
               <button
+                className='flex items-center'
                 onClick={() => {
                   // console.log("editing");
                   setIsEditing(true);
@@ -353,15 +341,20 @@ export default function Lists({ list, sounds }) {
                   );
                 }}
               >
-                Edit
+                <span className="material-symbols-outlined">
+                  edit
+                  </span>
               </button>
               <button
+                className='flex items-center'
                 onClick={() => {
-                  localStorage.removeItem("nonUserList");
-                  setLocalList(undefined);
+                  setIsDeleting(true);
+                  return;
                 }}
               >
-                Delete
+                <span className="material-symbols-outlined">
+                  delete
+                </span>
               </button>
             </li>
           ) : null}
@@ -369,6 +362,124 @@ export default function Lists({ list, sounds }) {
           {/* NO CODE FOR THIS YET */}
           {/* MAKE USER REGISTRATION FIRST */}
         </ul>
+
+        {/* DELETE MODAL */}
+        <Transition appear show={isDeleting}>
+          <Dialog
+            // open={isDeleting}
+            onClose={() => setIsDeleting(false)}
+            className={"fixed inset-0 flex items-center justify-center p-4"}
+          >
+            <Dialog.Panel>
+              <div className="bg-slate-700 p-4 rounded text-white">
+                <Dialog.Title className="mb-4">
+                  Delete List:{" "}
+                  <span className="text-2xl">{localList?.name}</span>
+                </Dialog.Title>
+                <Dialog.Description className="mb-8">
+                  You are about to permanently delete the list. Are you sure you
+                  want to do this?
+                </Dialog.Description>
+                <div className="flex justify-center gap-4">
+                  <button
+                    className="text-gray-100 px-4 py-2 rounded-xl"
+                    onClick={() => {
+                      setIsDeleting(false);
+                    }}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    className="text-red-500 px-4 py-2 rounded-xl underline underline-offset-2 decoration-2"
+                    onClick={() => {
+                      localStorage.removeItem("nonUserList");
+                      setLocalList(undefined);
+                      setIsDeleting(false);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </Dialog.Panel>
+          </Dialog>
+        </Transition>
+
+        {/* CREATE MODAL */}
+        <Transition appear show={isCreating}>
+          <Dialog
+            // open={isDeleting}
+            onClose={() => setIsCreating(false)}
+            className={"fixed inset-0 flex items-center justify-center p-4"}
+          >
+            <Dialog.Panel>
+              <div className="bg-slate-700 p-4 rounded text-white">
+                <Dialog.Title className="mb-4">Create Sound List</Dialog.Title>
+                {localStorage.getItem("nonUserList") ? (
+                  <>
+                    <Dialog.Description className="mb-8">
+                      You already have one. Please delete it to make another
+                    </Dialog.Description>
+                    <div className="flex justify-center">
+                      <button
+                        className="text-gray-100 px-4 py-2 rounded-xl"
+                        onClick={() => {
+                          setIsCreating(false);
+                        }}
+                      >
+                        Ok
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="mb-8">
+                      <label>Please give your list a name</label>
+                      <input
+                        className="text-black w-full p-2 rounded mt-2"
+                        onChange={(e) => setNewListName(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex justify-center gap-4">
+                      <button
+                        className="text-gray-100 px-4 py-2 rounded-xl"
+                        onClick={() => {
+                          setIsCreating(false);
+                          setNewListName("");
+                        }}
+                      >
+                        Cancel
+                      </button>
+
+                      <button
+                        disabled={newListName.length < 1}
+                        className="bg-blue-500 disabled:bg-gray-500 px-4 py-2 rounded-xl"
+                        onClick={() => {
+                          localStorage.setItem(
+                            "nonUserList",
+                            JSON.stringify({
+                              name: newListName,
+                              sounds: [],
+                            })
+                          );
+
+                          setLocalList(
+                            JSON.parse(localStorage.getItem("nonUserList"))
+                          );
+                          setNewListName("");
+                          setIsCreating(false);
+                        }}
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </Dialog.Panel>
+          </Dialog>
+        </Transition>
       </main>
     </>
   );
