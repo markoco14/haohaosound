@@ -171,13 +171,15 @@ export default function Lists({ list, sounds }) {
             </li>
           ))}
         </ul>
+
+
         {/* list of all sounds from db */}
         {loading ? (
           <p>Loading...</p>
         ) : (
           <ul className="mb-4 overflow-y-auto grid grid-cols-2 gap-2 max-h-[400px]">
             {sounds?.map((sound, index) => (
-              <li key={index} className="relative px-4 py-2 flex items-center justify-center bg-blue-500">
+              <li key={index} className={`relative px-4 py-2 flex items-center justify-center bg-blue-500`}>
                 {/* sample sounds button */}
                 <button
                   onClick={() => {
@@ -195,6 +197,8 @@ export default function Lists({ list, sounds }) {
                 >
                   {sound.name}
                 </button>
+
+
                 <audio ref={elementRefs.current[index]} src={sound.audio_url}>
                   Your browser does not support the <code>audio</code> element.
                 </audio>
@@ -203,11 +207,23 @@ export default function Lists({ list, sounds }) {
                 <button
                 className='absolute right-0 flex items-center'
                   onClick={() => {
-                    // console.log("added to list");
-                    // console.log(sound.name);
-                    // console.log(sound.audio_url);
-                    // console.log(localList);
-                    if (localList.sounds.length < 6) {
+                    // CHECK IF LIST IS ALREADY 6 SOUNDS LONG (FULL)
+                    if (localList.sounds.length < 6) {  
+
+                      // CHECK IF SOUND ALREADY IN LIST
+                      const soundInList = localList.sounds.find((listSound, index) => {
+                        if (listSound.name === sound.name) {
+                          return listSound
+                        }
+                      })
+                      
+                      // checks if sound in list and returns out of function
+                      if (soundInList) {
+                        alert('this sound already in set. please choose another one')
+                        return
+                      }
+                      
+                      // ADD SOUND TO LIST IF NOT ALREADY IN
                       localList.sounds.push(sound);
                       localStorage.setItem(
                         "nonUserList",
@@ -218,10 +234,9 @@ export default function Lists({ list, sounds }) {
                       );
                       return;
                     }
-                    alert("this list is full. delete sounds to add new ones");
-                    console.log('local list element refs', localListElementRefs.current)
 
-                    // console.log(localList.sounds);
+                    // IF LIST IS FULL, TELL USER
+                    alert("this list is full. delete sounds to add new ones");
                   }}
                 >
                   <span className="material-symbols-outlined">
@@ -296,7 +311,6 @@ export default function Lists({ list, sounds }) {
             Create New
           </button>
         </article>
-        {/* {isEditing ? <EditListModal /> : null} */}
         <Transition
           show={isEditing}
           enter="duration-500"
