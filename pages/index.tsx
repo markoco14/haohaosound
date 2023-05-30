@@ -11,30 +11,28 @@ export async function getServerSideProps(context) {
 		let { data, error } = await supabase.from('lists')
 		.select(`
 		id,
+		name,
 		list_sounds (sound_id, sounds (name, audio_url))
 		`)
 		.eq('id', 1)
 		.single();
 
-		const sounds = [];
-
-		data.list_sounds.forEach(sound => sounds.push(sound.sounds))
-
-		console.log(data)
-		console.log('sounds', sounds)
-
 		return {
 			props: {
-				list: sounds
+				list: data
 			},
 		}
 
 }
 
 export default function Home({list}) {
+	const sounds = [];
+
+	list.list_sounds.forEach((sound) => sounds.push(sound.sounds));
+
   const elementRefs = useRef([]);
 
-	list.forEach((_, index) => {
+	sounds.forEach((_, index) => {
     elementRefs.current[index] = React.createRef();
   });
 
@@ -50,10 +48,10 @@ export default function Home({list}) {
 				<Navbar />
 				<section>
 					<article className='p-2'>
-						<h1 className="text-2xl">生日快樂皓皓</h1>
+						<h1 className="text-2xl">{list.name}</h1>
 					</article>
 					<ul className="p-2 flex flex-col gap-4">
-						{list.map((sound, index) => (
+						{sounds.map((sound, index) => (
 							<li key={index}>
 								<button
 									className="w-full bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
