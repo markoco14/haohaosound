@@ -3,42 +3,39 @@ import { useRef } from 'react'
 import Link from 'next/link'
 import Navbar from '../components/Navbar';
 import React from 'react';
+import { supabase } from '../lib/supabaseClient';
 
 // add server side props 
 
-export default function Home() {
+export async function getServerSideProps(context) {
+		let { data, error } = await supabase.from('lists')
+		.select(`
+		id,
+		list_sounds (sound_id, sounds (name, audio_url))
+		`)
+		.eq('id', 1)
+		.single();
 
-  const soundLinks = [
-		{
-			action: "拍手",
-			link: "audio/clap_hands.mp3"
-		},
-		{
-			action: "歡呼",
-			link: "audio/crowd_cheer.mp3"
-		},
-		{
-			action: "嘘声",
-			link: "audio/crowd_boo.mp3"
-		},
-		{
-			action: "擊鼓",
-			link: "audio/joke_drum.mp3"
-		},
-		{
-			action: "蟋蟀",
-			link: "audio/crickets.wav"
-		},
-		{
-			action: "放屁",
-			link: "audio/fart.wav"
-		},
-	];
+		const sounds = [];
 
+		data.list_sounds.forEach(sound => sounds.push(sound.sounds))
 
+		console.log(data)
+		console.log('sounds', sounds)
+
+		return {
+			props: {
+				data: data,
+				list: sounds
+			},
+		}
+
+}
+
+export default function Home({data, list}) {
   const elementRefs = useRef([]);
 
-	soundLinks.forEach((_, index) => {
+	list.forEach((_, index) => {
     elementRefs.current[index] = React.createRef();
   });
 
@@ -57,7 +54,7 @@ export default function Home() {
 						<h1 className="text-2xl">生日快樂皓皓</h1>
 					</article>
 					<ul className="p-2 flex flex-col gap-4">
-						{soundLinks.map((sound, index) => (
+						{list.map((sound, index) => (
 							<li key={index}>
 								<button
 									className="w-full bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
@@ -73,8 +70,8 @@ export default function Home() {
 										}
 										elementRefs.current[index].current.play()
 									}}
-								>{sound.action}</button>
-								<audio ref={elementRefs.current[index]} src={sound.link}>
+								>{sound.name}</button>
+								<audio ref={elementRefs.current[index]} src={sound.audio_url}>
 									Your browser does not support the <code>audio</code> element.
 								</audio>
 							</li>
