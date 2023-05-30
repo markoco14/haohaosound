@@ -25,14 +25,13 @@ export async function getServerSideProps(context) {
 
 		return {
 			props: {
-				data: data,
 				list: sounds
 			},
 		}
 
 }
 
-export default function Home({data, list}) {
+export default function Home({list}) {
   const elementRefs = useRef([]);
 
 	list.forEach((_, index) => {
