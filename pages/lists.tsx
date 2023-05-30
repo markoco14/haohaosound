@@ -5,6 +5,7 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import { supabase } from "../lib/supabaseClient";
 import { Dialog, Transition } from "@headlessui/react";
+import { toast, Toaster } from "react-hot-toast";
 
 export async function getServerSideProps() {
   // TODO: add user session and get user lists
@@ -28,8 +29,7 @@ export async function getServerSideProps() {
 const EditListModal = ({localListElementRefs, selectedList, localList, setLocalList, setIsEditing}) => {
     const [sounds, setSounds] = useState([]);
     const [loading, setLoading] = useState<boolean>(false);
-
-    
+        
     const elementRefs = useRef([]);
 
     const fetchSoundData = async () => {
@@ -214,7 +214,18 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
                     }
 
                     // IF LIST IS FULL, TELL USER
-                    alert("this list is full. delete sounds to add new ones");
+                    toast((t) => (
+                      <div>
+                        <p className="mb-4">
+                          This list is full. Please delete a sound to add new ones.
+                        </p>
+                        <div className='flex justify-center'>
+                          <button onClick={() => toast.dismiss(t.id)}>
+                            Dismiss
+                          </button>
+                        </div>
+                      </div>
+                    ));
                   }}
                 >
                   <span className="material-symbols-outlined">add</span>
@@ -234,6 +245,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
             Done
           </button>
         </div>
+        {/* <Toaster /> */}
       </article>
     );
   };
