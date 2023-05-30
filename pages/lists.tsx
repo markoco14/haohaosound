@@ -25,44 +25,11 @@ export async function getServerSideProps() {
   };
 }
 
-export default function Lists({ list, sounds }) {
-  // console.log(list);
-
-  const [newListName, setNewListName] = useState<string>("");
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [selectedList, setSelectedList] = useState("");
-
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-
-  useEffect(() => {
-    const freeList = JSON.parse(localStorage.getItem("nonUserList"));
-    if (!freeList) {
-      console.log("No list found");
-      return;
-    }
-
-    setLocalList(freeList);
-    // console.log(freeList);
-  }, []);
-
-  const [localList, setLocalList] = useState<any>(undefined);
-  // console.log(list)
-  const localListElementRefs = useRef([]);
-
-  if (localList) {
-    localList.sounds.forEach((_, index) => {
-      localListElementRefs.current[index] = React.createRef();
-    });
-  }
-
-  // get sounds to play for local list
-
-  const EditListModal = () => {
+const EditListModal = ({localListElementRefs, selectedList, localList, setLocalList, setIsEditing}) => {
     const [sounds, setSounds] = useState([]);
     const [loading, setLoading] = useState<boolean>(false);
 
+    
     const elementRefs = useRef([]);
 
     const fetchSoundData = async () => {
@@ -262,7 +229,6 @@ export default function Lists({ list, sounds }) {
             className="w-full bg-green-600 rounded-t-xl"
             onClick={() => {
               setIsEditing(false);
-              // setSelectedList(null);
             }}
           >
             Done
@@ -271,6 +237,33 @@ export default function Lists({ list, sounds }) {
       </article>
     );
   };
+
+export default function Lists({ list, sounds }) {
+  const [newListName, setNewListName] = useState<string>("");
+  const [localList, setLocalList] = useState<any>(undefined);
+  const [selectedList, setSelectedList] = useState("");
+
+  const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+
+  useEffect(() => {
+    const freeList = JSON.parse(localStorage.getItem("nonUserList"));
+    if (!freeList) {
+      console.log("No list found");
+      return;
+    }
+    setLocalList(freeList);
+  }, []);
+
+  const localListElementRefs = useRef([]);
+
+  if (localList) {
+    localList.sounds.forEach((_, index) => {
+      localListElementRefs.current[index] = React.createRef();
+    });
+  }
 
   return (
     <>
@@ -307,7 +300,7 @@ export default function Lists({ list, sounds }) {
           leaveFrom="bottom-0 opacity-100"
           leaveTo="top-0 opacity-0"
         >
-          <EditListModal />
+          <EditListModal localListElementRefs={localListElementRefs} selectedList={selectedList} localList={localList} setLocalList={setLocalList} setIsEditing={setIsEditing}/>
         </Transition>
 
         {/* DIALOG TO SET NAME OF LIST */}
@@ -416,7 +409,7 @@ export default function Lists({ list, sounds }) {
             <Dialog.Panel>
               <div className="bg-slate-700 p-4 rounded text-white">
                 <Dialog.Title className="mb-4">Create Sound List</Dialog.Title>
-                {localStorage.getItem("nonUserList") ? (
+                {localList ? (
                   <>
                     <Dialog.Description className="mb-8">
                       You already have one. Please delete it to make another
