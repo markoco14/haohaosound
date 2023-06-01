@@ -279,7 +279,6 @@ export default function Lists({ list, sounds }) {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Navbar></Navbar>
       <article className="p-2 sm:flex sm:justify-between">
         <h1 className="text-2xl">你的聲音列表</h1>
 

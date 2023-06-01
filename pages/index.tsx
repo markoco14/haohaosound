@@ -43,7 +43,6 @@ export default function Home({list}) {
         <meta name="description" content="Play the perfect sound for every moment." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-			<Navbar />
 			<section>
 				<article className='p-2'>
 					<h1 className="text-2xl">{list.name}</h1>

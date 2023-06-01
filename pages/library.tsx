@@ -29,7 +29,6 @@ export default function Library({ sounds }) {
         <meta name="description" content="Play the perfect sound for every moment." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-			<Navbar></Navbar>
 			<article className="p-2">
 				<h1 className='text-2xl'>所有的聲音</h1>
 			</article>
