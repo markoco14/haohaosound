@@ -44,7 +44,6 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
       }
 
       if (soundData) {
-        // console.log("got the data", soundData);
         setSounds(soundData);
         soundData.forEach((_, index) => {
           elementRefs.current[index] = React.createRef();
@@ -106,8 +105,6 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
               <button
                 className="flex items-center absolute right-0"
                 onClick={() => {
-                  console.log("deleting sound", sound);
-                  console.log(localList);
                   const tempList = localList.sounds.filter(
                     (localStorageSound, index) => {
                       return localStorageSound.name != sound.name;
@@ -115,9 +112,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
                   );
 
                   // modify the local list
-                  console.log(tempList);
                   localList.sounds = tempList;
-                  console.log(localList);
 
                   // store the modified local list in local storage
                   localStorage.setItem(
@@ -355,7 +350,6 @@ export default function Lists({ list, sounds }) {
                 <button
                   className='flex items-center'
                   onClick={() => {
-                    // console.log("editing");
                     setIsEditing(true);
                     setSelectedList(
                       JSON.parse(localStorage.getItem("nonUserList")).name

@@ -15,10 +15,7 @@ export async function getServerSideProps() {
 	}
 }
 
-export default function Library({ sounds }) {
-
-	console.log(sounds)
-	
+export default function Library({ sounds }) {	
 	const elementRefs = useRef([]);
 
 	sounds.forEach((_, index) => {
