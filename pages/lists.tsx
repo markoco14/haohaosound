@@ -56,14 +56,112 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
       fetchSoundData();
     }, []);
 
+    function handleStopAllDbSoundsPlayback() {
+      elementRefs.current.forEach((ref, index) => {
+        elementRefs.current[index].current.pause();
+        elementRefs.current[index].current.currentTime = 0;
+      });
+    }
+
+    function handleStopAllLocalSoundsPlayback() {
+      localListElementRefs.current.forEach((ref, index) => {
+        localListElementRefs.current[index].current.pause();
+        localListElementRefs.current[index].current.currentTime = 0;
+      })
+    }
+
+    function handlePlayCurrentSound(soundList, index) {
+      soundList.current.forEach((ref, refIndex) => {
+        if (refIndex !== index) {
+          soundList.current[refIndex].current.pause();
+          soundList.current[
+            refIndex
+          ].current.currentTime = 0;
+        }
+      });
+      if (!soundList.current[index].current.paused) {
+        soundList.current[index].current.currentTime = 0;
+      }
+      soundList.current[index].current.play();
+    }
+
+    function handleRemoveSoundFromLocalList(sound) {
+      const tempList = localList.sounds.filter(
+        (localStorageSound, index) => {
+          return localStorageSound.name != sound.name;
+        }
+      );
+
+      // modify the local list
+      localList.sounds = tempList;
+
+      // store the modified local list in local storage
+      localStorage.setItem(
+        "nonUserList",
+        JSON.stringify(localList)
+      );
+
+      // setLocalList to trigger re-render
+      setLocalList(JSON.parse(localStorage.getItem("nonUserList")));
+
+      localListElementRefs.current.forEach((ref, index) => {
+        localListElementRefs.current.pop();
+      });
+    }
+
+    function handleAddSoundToList(sound) {
+      // CHECK IF LIST IS ALREADY 6 SOUNDS LONG (FULL)
+      if (localList.sounds.length < 6) {
+        // CHECK IF SOUND ALREADY IN LIST
+        const soundInList = localList.sounds.find(
+          (listSound, index) => {
+            if (listSound.name === sound.name) {
+              return listSound;
+            }
+          }
+        );
+
+        // checks if sound in list and returns out of function
+        if (soundInList) {
+          return;
+        }
+
+        // ADD SOUND TO LIST IF NOT ALREADY IN
+        localList.sounds.push(sound);
+        localStorage.setItem(
+          "nonUserList",
+          JSON.stringify(localList)
+        );
+        setLocalList(
+          JSON.parse(localStorage.getItem("nonUserList"))
+        );
+        return;
+      }
+
+      // IF LIST IS FULL, TELL USER
+      toast((t) => (
+        <div className="z-100">
+          <p>
+            This list is full. Please delete a sound to add new ones.
+          </p>
+        </div>
+      ), {
+        duration: 1500,
+      });
+    }
+
     return (
       <article className="bg-slate-800 p-4 rounded text-white sm:max-w-[600px] w-full">
-        <h2>Edit &quot;{selectedList}&quot;</h2>
+        <h2 className="mb-4">Edit &quot;{selectedList}&quot;</h2>
         {/* <p>List: {selectedList}</p> */}
         {/* <p>sounds</p> */}
-        <p>Selected Sounds: {localList.sounds.length} / 6</p>
+        <p className='mb-4'>Selected Sounds: {localList.sounds.length} / 6</p>
 
-        {/* sounds currently in the list */}
+        {/* SOUNDS USER HAS SELECTED FOR THEIR LIST */}
+        {localList.sounds.length < 1 ? (
+          <div className="mb-4 w-full flex justify-center">點擊<span className="material-symbols-outlined">add</span>添加</div>
+        ) : (
+
         <ul className="mb-4 grid grid-cols-3 gap-2">
           {localList.sounds?.map((sound, index) => (
             <li
@@ -73,24 +171,8 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
               <button
                 className="w-full"
                 onClick={() => {
-                  // STOP DB SOUNDS FROM PLAYING OVER LOCAL LIST SOUNDS
-                  elementRefs.current.forEach((ref, index) => {
-                        elementRefs.current[index].current.pause();
-                        elementRefs.current[index].current.currentTime = 0;
-                    });
-
-                  localListElementRefs.current.forEach((ref, refIndex) => {
-                    if (refIndex !== index) {
-                      localListElementRefs.current[refIndex].current.pause();
-                      localListElementRefs.current[
-                        refIndex
-                      ].current.currentTime = 0;
-                    }
-                  });
-                  if (!localListElementRefs.current[index].current.paused) {
-                    localListElementRefs.current[index].current.currentTime = 0;
-                  }
-                  localListElementRefs.current[index].current.play();
+                  handleStopAllDbSoundsPlayback();
+                  handlePlayCurrentSound(localListElementRefs, index)
                 }}
               >
                 {sound.name}
@@ -104,27 +186,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
               <button
                 className="flex items-center absolute right-0"
                 onClick={() => {
-                  const tempList = localList.sounds.filter(
-                    (localStorageSound, index) => {
-                      return localStorageSound.name != sound.name;
-                    }
-                  );
-
-                  // modify the local list
-                  localList.sounds = tempList;
-
-                  // store the modified local list in local storage
-                  localStorage.setItem(
-                    "nonUserList",
-                    JSON.stringify(localList)
-                  );
-
-                  // setLocalList to trigger re-render
-                  setLocalList(JSON.parse(localStorage.getItem("nonUserList")));
-
-                  localListElementRefs.current.forEach((ref, index) => {
-                    localListElementRefs.current.pop();
-                  });
+                  handleRemoveSoundFromLocalList(sound);
                 }}
               >
                 <span className="material-symbols-outlined">remove</span>
@@ -132,8 +194,9 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
             </li>
           ))}
         </ul>
+        )}
 
-        {/* list of all sounds from db */}
+        {/* ALL AVAILABLE SOUNDS FROM DB */}
         {loading ? (
           <p className="mx-auto w-full h-[250px] grid place-content-center">Loading...</p>
         ) : (
@@ -150,22 +213,8 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
                 {/* sample sounds button */}
                 <button
                   onClick={() => {
-                    // STOP LOCAL LIST SOUNDS FROM PLAYING OVER DB SOUNDS
-                    localListElementRefs.current.forEach((ref, index) => {
-                      localListElementRefs.current[index].current.pause();
-                      localListElementRefs.current[index].current.currentTime = 0;
-                    })
-
-                    elementRefs.current.forEach((ref, refIndex) => {
-                      if (refIndex !== index) {
-                        elementRefs.current[refIndex].current.pause();
-                        elementRefs.current[refIndex].current.currentTime = 0;
-                      }
-                    });
-                    if (!elementRefs.current[index].current.paused) {
-                      elementRefs.current[index].current.currentTime = 0;
-                    }
-                    elementRefs.current[index].current.play();
+                    handleStopAllLocalSoundsPlayback();
+                    handlePlayCurrentSound(elementRefs, index)
                   }}
                 >
                   {sound.name}
@@ -175,49 +224,10 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
                   Your browser does not support the <code>audio</code> element.
                 </audio>
 
-                {/* add sounds button */}
+                {/* ADD SOUNDS BUTTON */}
                 <button
                   className="absolute right-0 flex items-center"
-                  onClick={() => {
-                    // CHECK IF LIST IS ALREADY 6 SOUNDS LONG (FULL)
-                    if (localList.sounds.length < 6) {
-                      // CHECK IF SOUND ALREADY IN LIST
-                      const soundInList = localList.sounds.find(
-                        (listSound, index) => {
-                          if (listSound.name === sound.name) {
-                            return listSound;
-                          }
-                        }
-                      );
-
-                      // checks if sound in list and returns out of function
-                      if (soundInList) {
-                        return;
-                      }
-
-                      // ADD SOUND TO LIST IF NOT ALREADY IN
-                      localList.sounds.push(sound);
-                      localStorage.setItem(
-                        "nonUserList",
-                        JSON.stringify(localList)
-                      );
-                      setLocalList(
-                        JSON.parse(localStorage.getItem("nonUserList"))
-                      );
-                      return;
-                    }
-
-                    // IF LIST IS FULL, TELL USER
-                    toast((t) => (
-                      <div className="z-100">
-                        <p>
-                          This list is full. Please delete a sound to add new ones.
-                        </p>
-                      </div>
-                    ), {
-                      duration: 1500,
-                    });
-                  }}
+                  onClick={() => handleAddSoundToList(sound)}
                 >
                   <span className="material-symbols-outlined">add</span>
                 </button>
