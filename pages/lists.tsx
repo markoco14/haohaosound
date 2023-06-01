@@ -1,11 +1,10 @@
 import Head from "next/head";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import React from "react";
-import Navbar from "../components/Navbar";
 import { supabase } from "../lib/supabaseClient";
 import { Dialog, Transition } from "@headlessui/react";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 export async function getServerSideProps() {
   // TODO: add user session and get user lists
@@ -269,6 +268,22 @@ export default function Lists({ list, sounds }) {
     });
   }
 
+  function handleCreateList() {
+    localStorage.setItem(
+      "nonUserList",
+      JSON.stringify({
+        name: newListName,
+        sounds: [],
+      })
+    );
+
+    setLocalList(
+      JSON.parse(localStorage.getItem("nonUserList"))
+    );
+    setNewListName("");
+    setIsCreating(false);
+  }
+
   return (
     <>
       <Head>
@@ -446,7 +461,9 @@ export default function Lists({ list, sounds }) {
                   </div>
                 </>
               ) : (
-                <>
+                <form 
+                  onSubmit={handleCreateList}
+                >
                   <div className="mb-8">
                     <label>Please give your list a name</label>
                     <input
@@ -456,6 +473,7 @@ export default function Lists({ list, sounds }) {
                   </div>
                   <div className="flex justify-center gap-4">
                     <button
+                      type="button"
                       className="text-gray-100 px-4 py-2 rounded-xl"
                       onClick={() => {
                         setIsCreating(false);
@@ -464,30 +482,14 @@ export default function Lists({ list, sounds }) {
                     >
                       Cancel
                     </button>
-
                     <button
                       disabled={newListName.length < 1}
                       className="bg-blue-500 disabled:bg-gray-500 px-4 py-2 rounded-xl"
-                      onClick={() => {
-                        localStorage.setItem(
-                          "nonUserList",
-                          JSON.stringify({
-                            name: newListName,
-                            sounds: [],
-                          })
-                        );
-
-                        setLocalList(
-                          JSON.parse(localStorage.getItem("nonUserList"))
-                        );
-                        setNewListName("");
-                        setIsCreating(false);
-                      }}
                     >
                       Confirm
                     </button>
                   </div>
-                </>
+                </form>
               )}
             </div>
           </Dialog.Panel>
