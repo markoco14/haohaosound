@@ -5,6 +5,7 @@ import React from "react";
 import { supabase } from "../lib/supabaseClient";
 import { Dialog, Transition } from "@headlessui/react";
 import { toast } from "react-hot-toast";
+import Spinner from "../components/Spinner";
 
 export async function getServerSideProps() {
   // TODO: add user session and get user lists
@@ -198,7 +199,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
 
         {/* ALL AVAILABLE SOUNDS FROM DB */}
         {loading ? (
-          <p className="mx-auto w-full h-[250px] grid place-content-center">Loading...</p>
+          <p className="mx-auto w-full h-[250px] grid place-content-center"><Spinner /></p>
         ) : (
           <ul className="mb-4 overflow-y-auto grid grid-cols-2 gap-2 max-h-[400px]">
             {sounds?.map((sound, index) => (
