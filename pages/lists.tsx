@@ -143,7 +143,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
       toast((t) => (
         <div className="z-100">
           <p>
-            This list is full. Please delete a sound to add new ones.
+            此列表已滿。 請刪除聲音以添加新聲音。
           </p>
         </div>
       ), {
@@ -153,10 +153,10 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
 
     return (
       <article className="bg-slate-800 p-4 rounded text-white sm:max-w-[600px] w-full">
-        <h2 className="mb-4">Edit &quot;{selectedList}&quot;</h2>
+        <h2 className="mb-4">編輯 &quot;{selectedList}&quot;</h2>
         {/* <p>List: {selectedList}</p> */}
         {/* <p>sounds</p> */}
-        <p className='mb-4'>Selected Sounds: {localList.sounds.length} / 6</p>
+        <p className='mb-4'>選擇的聲音: {localList.sounds.length} / 6</p>
 
         {/* SOUNDS USER HAS SELECTED FOR THEIR LIST */}
         {localList.sounds.length < 1 ? (
@@ -190,6 +190,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
                   handleRemoveSoundFromLocalList(sound);
                 }}
               >
+                {/* KEEP ENGLISH FOR ICON */}
                 <span className="material-symbols-outlined">remove</span>
               </button>
             </li>
@@ -230,6 +231,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
                   className="absolute right-0 flex items-center"
                   onClick={() => handleAddSoundToList(sound)}
                 >
+                  {/* KEEP ENGLISH FOR ICON */}
                   <span className="material-symbols-outlined">add</span>
                 </button>
               </li>
@@ -244,7 +246,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
               setIsEditing(false);
             }}
           >
-            Done
+            完全的
           </button>
         </div>
         {/* <Toaster /> */}
@@ -315,7 +317,7 @@ export default function Lists({ list, sounds }) {
           }}
           className="absolute  px-4 bottom-0 left-0 w-full bg-green-600 h-12 rounded-t-xl active:bg-green-900 sm:relative sm:max-w-fit sm:rounded-md sm:active:scale-90 ease-in-out duration-200"
         >
-          Create New
+          加新的
         </button>
       </article>
 
@@ -378,6 +380,7 @@ export default function Lists({ list, sounds }) {
                 );
               }}
             >
+              {/* KEEP ENGLISH FOR ICON */}
               <span className="material-symbols-outlined">
                 edit
                 </span>
@@ -389,6 +392,7 @@ export default function Lists({ list, sounds }) {
                 return;
               }}
             >
+              {/* KEEP ENGLISH FOR ICON */}
               <span className="material-symbols-outlined">
                 delete
               </span>
@@ -411,12 +415,11 @@ export default function Lists({ list, sounds }) {
           <Dialog.Panel>
             <div className="bg-slate-700 p-4 rounded text-white">
               <Dialog.Title className="mb-4">
-                Delete List:{" "}
+                刪除列表:{" "}
                 <span className="text-2xl">{localList?.name}</span>
               </Dialog.Title>
               <Dialog.Description className="mb-8">
-                You are about to permanently delete the list. Are you sure you
-                want to do this?
+                您即將永久刪除該列表。 您將無法再看到它。
               </Dialog.Description>
               <div className="flex justify-center gap-4">
                 <button
@@ -425,7 +428,7 @@ export default function Lists({ list, sounds }) {
                     setIsDeleting(false);
                   }}
                 >
-                  Cancel
+                  不想
                 </button>
 
                 <button
@@ -436,7 +439,7 @@ export default function Lists({ list, sounds }) {
                     setIsDeleting(false);
                   }}
                 >
-                  Delete
+                  決定
                 </button>
               </div>
             </div>
@@ -458,7 +461,7 @@ export default function Lists({ list, sounds }) {
               {localList ? (
                 <>
                   <Dialog.Description className="mb-8">
-                    You already have one. Please delete it to make another
+                    您已經有 1 個免費列表。 刪除它以製作新的，或編輯以更改聲音。
                   </Dialog.Description>
                   <div className="flex justify-center">
                     <button
@@ -467,7 +470,7 @@ export default function Lists({ list, sounds }) {
                         setIsCreating(false);
                       }}
                     >
-                      Ok
+                      好的
                     </button>
                   </div>
                 </>
@@ -476,7 +479,7 @@ export default function Lists({ list, sounds }) {
                   onSubmit={handleCreateList}
                 >
                   <div className="mb-8">
-                    <label>Please give your list a name</label>
+                    <label>請選擇一個名字</label>
                     <input
                       className="text-black w-full p-2 rounded mt-2"
                       onChange={(e) => setNewListName(e.target.value)}
@@ -491,13 +494,13 @@ export default function Lists({ list, sounds }) {
                         setNewListName("");
                       }}
                     >
-                      Cancel
+                      取消
                     </button>
                     <button
                       disabled={newListName.length < 1}
                       className="bg-blue-500 disabled:bg-gray-500 px-4 py-2 rounded-xl"
                     >
-                      Confirm
+                      好的
                     </button>
                   </div>
                 </form>
