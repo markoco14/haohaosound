@@ -364,15 +364,15 @@ export default function Lists({ list, sounds }) {
         </li>
         {/* LOCAL LIST IF YOU CHOOSE TO CREATE ONE */}
         {localList ? (
-          <li className="flex justify-between">
+          <li className="grid grid-cols-4 gap-2">
             <Link
               href={"freelist"}
-              className="bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md flex justify-between"
+              className="col-span-2 bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md flex justify-center"
             >
               {localList.name}
             </Link>
             <button
-              className='flex items-center'
+              className='flex items-center justify-center col-span-1'
               onClick={() => {
                 setIsEditing(true);
                 setSelectedList(
@@ -386,7 +386,7 @@ export default function Lists({ list, sounds }) {
                 </span>
             </button>
             <button
-              className='flex items-center'
+              className='flex items-center justify-center col-span-1'
               onClick={() => {
                 setIsDeleting(true);
                 return;
