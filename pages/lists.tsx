@@ -5,6 +5,7 @@ import React from "react";
 import { supabase } from "../lib/supabaseClient";
 import { Dialog, Transition } from "@headlessui/react";
 import { toast } from "react-hot-toast";
+import Spinner from "../components/Spinner";
 
 export async function getServerSideProps() {
   // TODO: add user session and get user lists
@@ -142,7 +143,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
       toast((t) => (
         <div className="z-100">
           <p>
-            This list is full. Please delete a sound to add new ones.
+            此列表已滿。 請刪除聲音以添加新聲音。
           </p>
         </div>
       ), {
@@ -152,10 +153,10 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
 
     return (
       <article className="bg-slate-800 p-4 rounded text-white sm:max-w-[600px] w-full">
-        <h2 className="mb-4">Edit &quot;{selectedList}&quot;</h2>
+        <h2 className="mb-4">編輯 &quot;{selectedList}&quot;</h2>
         {/* <p>List: {selectedList}</p> */}
         {/* <p>sounds</p> */}
-        <p className='mb-4'>Selected Sounds: {localList.sounds.length} / 6</p>
+        <p className='mb-4'>選擇的聲音: {localList.sounds.length} / 6</p>
 
         {/* SOUNDS USER HAS SELECTED FOR THEIR LIST */}
         {localList.sounds.length < 1 ? (
@@ -189,6 +190,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
                   handleRemoveSoundFromLocalList(sound);
                 }}
               >
+                {/* KEEP ENGLISH FOR ICON */}
                 <span className="material-symbols-outlined">remove</span>
               </button>
             </li>
@@ -198,7 +200,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
 
         {/* ALL AVAILABLE SOUNDS FROM DB */}
         {loading ? (
-          <p className="mx-auto w-full h-[250px] grid place-content-center">Loading...</p>
+          <p className="mx-auto w-full h-[250px] grid place-content-center"><Spinner /></p>
         ) : (
           <ul className="mb-4 overflow-y-auto grid grid-cols-2 gap-2 max-h-[400px]">
             {sounds?.map((sound, index) => (
@@ -229,6 +231,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
                   className="absolute right-0 flex items-center"
                   onClick={() => handleAddSoundToList(sound)}
                 >
+                  {/* KEEP ENGLISH FOR ICON */}
                   <span className="material-symbols-outlined">add</span>
                 </button>
               </li>
@@ -243,7 +246,7 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
               setIsEditing(false);
             }}
           >
-            Done
+            完全的
           </button>
         </div>
         {/* <Toaster /> */}
@@ -314,7 +317,7 @@ export default function Lists({ list, sounds }) {
           }}
           className="absolute  px-4 bottom-0 left-0 w-full bg-green-600 h-12 rounded-t-xl active:bg-green-900 sm:relative sm:max-w-fit sm:rounded-md sm:active:scale-90 ease-in-out duration-200"
         >
-          Create New
+          加新的
         </button>
       </article>
 
@@ -347,29 +350,28 @@ export default function Lists({ list, sounds }) {
         </Dialog>
       </Transition>
 
-      {/* DIALOG TO SET NAME OF LIST */}
-
+        {/* LIST OF ALL AVAILABLE SOUND SETS */}
       <ul className="p-2 flex flex-col gap-2">
         {/* FREE LIST FROM DB FOR EVERYONE (HAOHAO'S BIRTHDAY LIST) */}
-        <li className="flex justify-between">
+        <li className="grid grid-cols-4 gap-2">
           <Link
             href={list.url}
-            className="bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
+            className="bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md col-span-2 flex justify-center"
           >
             <span>{list.name}</span>
           </Link>
         </li>
         {/* LOCAL LIST IF YOU CHOOSE TO CREATE ONE */}
         {localList ? (
-          <li className="flex justify-between">
+          <li className="grid grid-cols-4 gap-2">
             <Link
               href={"freelist"}
-              className="bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md flex justify-between"
+              className="col-span-2 bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md flex justify-center"
             >
               {localList.name}
             </Link>
             <button
-              className='flex items-center'
+              className='flex items-center justify-center col-span-1'
               onClick={() => {
                 setIsEditing(true);
                 setSelectedList(
@@ -377,17 +379,19 @@ export default function Lists({ list, sounds }) {
                 );
               }}
             >
+              {/* KEEP ENGLISH FOR ICON */}
               <span className="material-symbols-outlined">
                 edit
                 </span>
             </button>
             <button
-              className='flex items-center'
+              className='flex items-center justify-center col-span-1'
               onClick={() => {
                 setIsDeleting(true);
                 return;
               }}
             >
+              {/* KEEP ENGLISH FOR ICON */}
               <span className="material-symbols-outlined">
                 delete
               </span>
@@ -410,12 +414,11 @@ export default function Lists({ list, sounds }) {
           <Dialog.Panel>
             <div className="bg-slate-700 p-4 rounded text-white">
               <Dialog.Title className="mb-4">
-                Delete List:{" "}
+                刪除列表:{" "}
                 <span className="text-2xl">{localList?.name}</span>
               </Dialog.Title>
               <Dialog.Description className="mb-8">
-                You are about to permanently delete the list. Are you sure you
-                want to do this?
+                您即將永久刪除該列表。 您將無法再看到它。
               </Dialog.Description>
               <div className="flex justify-center gap-4">
                 <button
@@ -424,7 +427,7 @@ export default function Lists({ list, sounds }) {
                     setIsDeleting(false);
                   }}
                 >
-                  Cancel
+                  不想
                 </button>
 
                 <button
@@ -435,7 +438,7 @@ export default function Lists({ list, sounds }) {
                     setIsDeleting(false);
                   }}
                 >
-                  Delete
+                  決定
                 </button>
               </div>
             </div>
@@ -449,7 +452,7 @@ export default function Lists({ list, sounds }) {
         <Dialog
           // open={isDeleting}
           onClose={() => setIsCreating(false)}
-          className={"fixed inset-0 flex items-center justify-center p-4"}
+          className={"fixed top-0 left-0 md:inset-0 flex items-center justify-center p-4"}
         >
           <Dialog.Panel>
             <div className="bg-slate-700 p-4 rounded text-white">
@@ -457,7 +460,7 @@ export default function Lists({ list, sounds }) {
               {localList ? (
                 <>
                   <Dialog.Description className="mb-8">
-                    You already have one. Please delete it to make another
+                    您已經有 1 個免費列表。 刪除它以製作新的，或編輯以更改聲音。
                   </Dialog.Description>
                   <div className="flex justify-center">
                     <button
@@ -466,7 +469,7 @@ export default function Lists({ list, sounds }) {
                         setIsCreating(false);
                       }}
                     >
-                      Ok
+                      好的
                     </button>
                   </div>
                 </>
@@ -475,7 +478,7 @@ export default function Lists({ list, sounds }) {
                   onSubmit={handleCreateList}
                 >
                   <div className="mb-8">
-                    <label>Please give your list a name</label>
+                    <label>請選擇一個名字</label>
                     <input
                       className="text-black w-full p-2 rounded mt-2"
                       onChange={(e) => setNewListName(e.target.value)}
@@ -490,13 +493,13 @@ export default function Lists({ list, sounds }) {
                         setNewListName("");
                       }}
                     >
-                      Cancel
+                      取消
                     </button>
                     <button
                       disabled={newListName.length < 1}
                       className="bg-blue-500 disabled:bg-gray-500 px-4 py-2 rounded-xl"
                     >
-                      Confirm
+                      好的
                     </button>
                   </div>
                 </form>
