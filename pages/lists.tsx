@@ -350,14 +350,13 @@ export default function Lists({ list, sounds }) {
         </Dialog>
       </Transition>
 
-      {/* DIALOG TO SET NAME OF LIST */}
-
+        {/* LIST OF ALL AVAILABLE SOUND SETS */}
       <ul className="p-2 flex flex-col gap-2">
         {/* FREE LIST FROM DB FOR EVERYONE (HAOHAO'S BIRTHDAY LIST) */}
-        <li className="flex justify-between">
+        <li className="grid grid-cols-4 gap-2">
           <Link
             href={list.url}
-            className="bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
+            className="bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md col-span-2 flex justify-center"
           >
             <span>{list.name}</span>
           </Link>
@@ -453,7 +452,7 @@ export default function Lists({ list, sounds }) {
         <Dialog
           // open={isDeleting}
           onClose={() => setIsCreating(false)}
-          className={"fixed inset-0 flex items-center justify-center p-4"}
+          className={"fixed top-0 left-0 md:inset-0 flex items-center justify-center p-4"}
         >
           <Dialog.Panel>
             <div className="bg-slate-700 p-4 rounded text-white">
