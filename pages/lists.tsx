@@ -431,7 +431,7 @@ export default function Lists({ list, sounds }) {
                 </button>
 
                 <button
-                  className="text-red-500 px-4 py-2 rounded-xl underline underline-offset-2 decoration-2"
+                  className="text-red-500 px-4 py-2 rounded-xl underline underline-offset-8 decoration-2"
                   onClick={() => {
                     localStorage.removeItem("nonUserList");
                     setLocalList(undefined);

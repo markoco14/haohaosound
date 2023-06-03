@@ -63,9 +63,10 @@ export default function Library({ list }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 			<section>
-				<article className='p-2'>
+				<article className='p-2 mb-4'>
 					<h1 className="text-2xl">{listName}</h1>
 				</article>
+				{(sounds.length > 0) ? (
 				<ul className="p-2 flex flex-col gap-4">
 					{sounds?.map((sound, index) => (
 						<li key={index}>
@@ -89,7 +90,15 @@ export default function Library({ list }) {
 							</audio>
 						</li>
 					))}
-				</ul>
+				</ul>) : (
+					<article className='p-2'>
+						<div className='p-8 bg-gradient-to-r from-slate-700 to-slate-800 rounded-xl'>
+							<p className='mb-4'>此列表中沒有聲音</p>
+							<Link href="/lists" className='underline decoration-2 underline-offset-8'>加聲音</Link>
+						</div>
+					</article>
+				)}
+				
 			</section>
     </div>
   )
