@@ -99,11 +99,12 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
       // store the modified local list in local storage
       localStorage.setItem(
         "nonUserList",
-        JSON.stringify(localList)
+        JSON.stringify([localList])
       );
 
       // setLocalList to trigger re-render
-      setLocalList(JSON.parse(localStorage.getItem("nonUserList")));
+      const freeList = JSON.parse(localStorage.getItem("nonUserList"))
+      setLocalList(freeList[0]);
 
       localListElementRefs.current.forEach((ref, index) => {
         localListElementRefs.current.pop();
@@ -131,10 +132,11 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
         localList.sounds.push(sound);
         localStorage.setItem(
           "nonUserList",
-          JSON.stringify(localList)
+          JSON.stringify([localList])
         );
+        const freeList = JSON.parse(localStorage.getItem("nonUserList"));
         setLocalList(
-          JSON.parse(localStorage.getItem("nonUserList"))
+          freeList[0]
         );
         return;
       }
@@ -204,7 +206,6 @@ const EditListModal = ({localListElementRefs, selectedList, localList, setLocalL
         ) : (
           <ul className="mb-4 overflow-y-auto grid grid-cols-2 gap-2 max-h-[400px]">
             {sounds?.map((sound, index) => (
-              // TODO: CHANGE STYLES IF SOUND IN LOCAL LIST
               <li
                 key={index}
                 className={`
@@ -263,20 +264,19 @@ export default function Lists({ list, sounds }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-
   useEffect(() => {
     const freeList = JSON.parse(localStorage.getItem("nonUserList"));
     if (!freeList) {
       console.log("No list found");
       return;
     }
-    setLocalList(freeList);
+    setLocalList(freeList[0]);
   }, []);
 
   const localListElementRefs = useRef([]);
 
   if (localList) {
-    localList.sounds.forEach((_, index) => {
+    localList.sounds?.forEach((_, index) => {
       localListElementRefs.current[index] = React.createRef();
     });
   }
@@ -284,14 +284,14 @@ export default function Lists({ list, sounds }) {
   function handleCreateList() {
     localStorage.setItem(
       "nonUserList",
-      JSON.stringify({
+      JSON.stringify([{
         name: newListName,
         sounds: [],
-      })
+      }])
     );
-
+    const freeList = JSON.parse(localStorage.getItem("nonUserList"));
     setLocalList(
-      JSON.parse(localStorage.getItem("nonUserList"))
+      freeList[0]
     );
     setNewListName("");
     setIsCreating(false);
@@ -368,14 +368,14 @@ export default function Lists({ list, sounds }) {
               href={"freelist"}
               className="col-span-2 bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md flex justify-center"
             >
-              {localList.name}
+              {localList?.name}
             </Link>
             <button
               className='flex items-center justify-center col-span-1'
               onClick={() => {
                 setIsEditing(true);
                 setSelectedList(
-                  JSON.parse(localStorage.getItem("nonUserList")).name
+                  JSON.parse(localStorage.getItem("nonUserList"))[0].name
                 );
               }}
             >
