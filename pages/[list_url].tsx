@@ -28,7 +28,8 @@ export async function getServerSideProps(context) {
 
 }
 
-export default function Library({ list }) {
+export default function Listen({ list }) {
+	console.log(list)
 
 	const [sounds, setSounds] = useState([]);
 	const [listName, setListName] = useState('');
@@ -38,8 +39,8 @@ export default function Library({ list }) {
 	
 	useEffect(() => {
 		if (router.query.list_url === 'freelist') {
-			const soundLinks = JSON.parse(localStorage.getItem("nonUserList")).sounds
-			setListName(JSON.parse(localStorage.getItem("nonUserList")).name)
+			const soundLinks = JSON.parse(localStorage.getItem("nonUserList"))[0].sounds
+			setListName(JSON.parse(localStorage.getItem("nonUserList"))[0].name)
 			setSounds(soundLinks);
 			return
 		} else {
