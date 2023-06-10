@@ -10,7 +10,8 @@ interface Props {
 }
 
 export async function getServerSideProps(context) {
-  if (context.params.list_url !== 'freelist') {
+  const url = context.params.list_url;
+  if (url !== 'freelist' && url !== 'favicon.ico') {
     try {
       let data = await listAdapter.getList({
         url: context.query.list_url,
@@ -22,12 +23,13 @@ export async function getServerSideProps(context) {
         },
       };
     } catch (error) {
+      console.log({ error });
       // TODO: error handling
     }
   } else {
     return {
       props: {
-        list: null,
+        list: {},
       },
     };
   }

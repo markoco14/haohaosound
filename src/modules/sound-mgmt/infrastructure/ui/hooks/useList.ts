@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { localStorageAdapter } from '../../../../core/infrastructure/adapters/localStorageAdapter';
 import { List } from '../../../domain/entities/List';
 
 export const useList = (list: List) => {
@@ -10,9 +11,8 @@ export const useList = (list: List) => {
 
   useEffect(() => {
     if (router.query.list_url === 'freelist') {
-      const soundLinks = JSON.parse(localStorage.getItem('nonUserList'))[0]
-        .sounds;
-      setListName(JSON.parse(localStorage.getItem('nonUserList'))[0].name);
+      const soundLinks = localStorageAdapter.get('nonUserList')[0].sounds;
+      setListName(localStorageAdapter.get('nonUserList')[0].name);
       setSounds(soundLinks);
       return;
     } else {
