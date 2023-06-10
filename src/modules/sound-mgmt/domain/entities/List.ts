@@ -1,4 +1,3 @@
 export class List {
-  public name: string;
-  public sounds: [];
+  constructor(public name: string, public sounds: []) {}
 }

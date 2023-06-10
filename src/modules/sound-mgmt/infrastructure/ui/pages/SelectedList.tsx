@@ -1,9 +1,9 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useRef } from 'react';
 import { List } from '../../../domain/entities/List';
 import { listAdapter } from '../../adapters/listAdapter';
+import { useList } from '../hooks/useList';
 
 interface Props {
   list: List;
@@ -36,24 +36,7 @@ export async function getServerSideProps(context) {
 export const SelectedList: FC<Props> = ({ list }) => {
   console.log(list);
 
-  const [sounds, setSounds] = useState([]);
-  const [listName, setListName] = useState('');
-
-  const router = useRouter();
-
-  useEffect(() => {
-    if (router.query.list_url === 'freelist') {
-      const soundLinks = JSON.parse(localStorage.getItem('nonUserList'))[0]
-        .sounds;
-      setListName(JSON.parse(localStorage.getItem('nonUserList'))[0].name);
-      setSounds(soundLinks);
-      return;
-    } else {
-      setListName(list[0].list_name);
-    }
-
-    setSounds(list);
-  }, [router.query.list_url, list]);
+  const { sounds, listName } = useList(list);
 
   const elementRefs = useRef([]);
   sounds?.forEach((_, index) => {

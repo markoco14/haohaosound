@@ -12,7 +12,12 @@ class ListAdapter {
       throw new Error(`Failed to get list by url: ${url}`);
     }
 
-    return data;
+    const list = {
+      name: data[0].list_name,
+      sounds: data,
+    };
+
+    return list;
   }
 }
 
