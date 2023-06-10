@@ -1,10 +1,10 @@
 import Head from 'next/head'
 import { useRef } from 'react'
 import Link from 'next/link'
-import Navbar from '../components/Navbar';
+import Navbar from '../modules/sound-mgmt/components/Navbar';
 import React from 'react';
-import { supabase } from '../lib/supabaseClient';
-// add server side props 
+import { supabase } from '../modules/sound-mgmt/lib/supabaseClient';
+// add server side props
 
 export async function getServerSideProps(context) {
 		let { data, error } = await supabase.from('lists')

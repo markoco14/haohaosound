@@ -2,10 +2,10 @@ import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import React from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "../modules/sound-mgmt/lib/supabaseClient";
 import { Dialog, Transition } from "@headlessui/react";
 import { toast } from "react-hot-toast";
-import Spinner from "../components/Spinner";
+import Spinner from "../modules/sound-mgmt/components/Spinner";
 
 export async function getServerSideProps() {
   // TODO: add user session and get user lists
@@ -29,7 +29,7 @@ export async function getServerSideProps() {
 const EditListModal = ({localListElementRefs, selectedList, localList, setLocalList, setIsEditing}) => {
     const [sounds, setSounds] = useState([]);
     const [loading, setLoading] = useState<boolean>(false);
-        
+
     const elementRefs = useRef([]);
 
     const fetchSoundData = async () => {
@@ -332,18 +332,18 @@ export default function Lists({ list, sounds }) {
         leaveTo="opacity-70"
       >
         <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
-        <Dialog 
+        <Dialog
           onClose={() => {setIsEditing(false)}}
           className={"fixed inset-0 flex items-center justify-center p-4"}
         >
           <Dialog.Panel
           className="sm:max-w-[600px] w-full">
-            
-            <EditListModal 
-              localListElementRefs={localListElementRefs} 
-              selectedList={selectedList} 
-              localList={localList} 
-              setLocalList={setLocalList} 
+
+            <EditListModal
+              localListElementRefs={localListElementRefs}
+              selectedList={selectedList}
+              localList={localList}
+              setLocalList={setLocalList}
               setIsEditing={setIsEditing}
             />
           </Dialog.Panel>
@@ -474,7 +474,7 @@ export default function Lists({ list, sounds }) {
                   </div>
                 </>
               ) : (
-                <form 
+                <form
                   onSubmit={handleCreateList}
                 >
                   <div className="mb-8">

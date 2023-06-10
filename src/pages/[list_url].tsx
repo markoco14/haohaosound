@@ -2,9 +2,9 @@ import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import React from 'react';
-import Navbar from '../components/Navbar';
+import Navbar from '../modules/sound-mgmt/components/Navbar';
 import { useRouter } from 'next/router';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '../modules/sound-mgmt/lib/supabaseClient';
 
 export async function getServerSideProps(context) {
 	if (context.params.list_url !== 'freelist') {
@@ -19,7 +19,7 @@ export async function getServerSideProps(context) {
 			},
 		}
 	} else {
-		return { 
+		return {
 			props: {
 				list: null
 			}
@@ -36,7 +36,7 @@ export default function Listen({ list }) {
 
 	const router = useRouter();
 
-	
+
 	useEffect(() => {
 		if (router.query.list_url === 'freelist') {
 			const soundLinks = JSON.parse(localStorage.getItem("nonUserList"))[0].sounds
@@ -46,11 +46,11 @@ export default function Listen({ list }) {
 		} else {
 			setListName(list[0].list_name)
 		}
-		
+
 		setSounds(list);
 	}, [router.query.list_url, list])
-	
-	
+
+
 	const elementRefs = useRef([]);
 	sounds?.forEach((_, index) => {
 			elementRefs.current[index] = React.createRef();
@@ -99,7 +99,7 @@ export default function Listen({ list }) {
 						</div>
 					</article>
 				)}
-				
+
 			</section>
     </div>
   )

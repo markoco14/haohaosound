@@ -2,8 +2,8 @@ import Head from 'next/head'
 import { useRef } from 'react'
 import Link from 'next/link'
 import React from 'react';
-import { supabase } from '../lib/supabaseClient';
-import Navbar from '../components/Navbar';
+import { supabase } from '../modules/sound-mgmt/lib/supabaseClient';
+import Navbar from '../modules/sound-mgmt/components/Navbar';
 
 export async function getServerSideProps() {
 	let { data, error } = await supabase.from('sounds').select('*')
@@ -15,7 +15,7 @@ export async function getServerSideProps() {
 	}
 }
 
-export default function Library({ sounds }) {	
+export default function Library({ sounds }) {
 	const elementRefs = useRef([]);
 
 	sounds.forEach((_, index) => {
