@@ -1,3 +1,4 @@
+import { localStorageAdapter } from '../../../core/infrastructure/adapters/localStorageAdapter';
 import { List } from '../../domain/entities/List';
 import { supabase } from './supabaseClient';
 
@@ -18,6 +19,20 @@ class ListAdapter {
     };
 
     return list;
+  }
+
+  public getFreeLists(): List[] {
+    const data = localStorageAdapter.get('nonUserList');
+
+    const lists = data.map((l) => new List(l.name, l.sounds));
+
+    return lists;
+  }
+
+  public getFreeList(): List {
+    const lists = this.getFreeLists();
+
+    return lists[0];
   }
 }
 
