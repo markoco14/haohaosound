@@ -6,15 +6,19 @@ import { listAdapter } from '../modules/sound-mgmt/infrastructure/adapters/listA
 
 export async function getServerSideProps(context) {
   if (context.params.list_url !== 'freelist') {
-    let { data, error } = await listAdapter.getList({
-      url: context.query.list_url,
-    });
+    try {
+      let data = await listAdapter.getList({
+        url: context.query.list_url,
+      });
 
-    return {
-      props: {
-        list: data,
-      },
-    };
+      return {
+        props: {
+          list: data,
+        },
+      };
+    } catch (error) {
+      // TODO: error handling
+    }
   } else {
     return {
       props: {
