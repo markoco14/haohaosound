@@ -2,10 +2,10 @@ import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import React from "react";
-import { supabase } from "../modules/sound-mgmt/lib/supabaseClient";
+import { supabase } from "../modules/sound-mgmt/infrastructure/adapters/supabaseClient";
 import { Dialog, Transition } from "@headlessui/react";
 import { toast } from "react-hot-toast";
-import Spinner from "../modules/sound-mgmt/components/Spinner";
+import Spinner from "../modules/sound-mgmt/infrastructure/ui/components/Spinner";
 
 export async function getServerSideProps() {
   // TODO: add user session and get user lists

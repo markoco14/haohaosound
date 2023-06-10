@@ -1,9 +1,9 @@
 import Head from 'next/head'
 import { useRef } from 'react'
 import Link from 'next/link'
-import Navbar from '../modules/sound-mgmt/components/Navbar';
+import Navbar from '../modules/sound-mgmt/infrastructure/ui/components/Navbar';
 import React from 'react';
-import { supabase } from '../modules/sound-mgmt/lib/supabaseClient';
+import { supabase } from '../modules/sound-mgmt/infrastructure/adapters/supabaseClient';
 // add server side props
 
 export async function getServerSideProps(context) {

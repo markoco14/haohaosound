@@ -2,9 +2,9 @@ import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import React from 'react';
-import Navbar from '../modules/sound-mgmt/components/Navbar';
+import Navbar from '../modules/sound-mgmt/infrastructure/ui/components/Navbar';
 import { useRouter } from 'next/router';
-import { supabase } from '../modules/sound-mgmt/lib/supabaseClient';
+import { supabase } from '../modules/sound-mgmt/infrastructure/adapters/supabaseClient';
 
 export async function getServerSideProps(context) {
 	if (context.params.list_url !== 'freelist') {

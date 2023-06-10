@@ -2,8 +2,8 @@ import Head from 'next/head'
 import { useRef } from 'react'
 import Link from 'next/link'
 import React from 'react';
-import { supabase } from '../modules/sound-mgmt/lib/supabaseClient';
-import Navbar from '../modules/sound-mgmt/components/Navbar';
+import { supabase } from '../modules/sound-mgmt/infrastructure/adapters/supabaseClient';
+import Navbar from '../modules/sound-mgmt/infrastructure/ui/components/Navbar';
 
 export async function getServerSideProps() {
 	let { data, error } = await supabase.from('sounds').select('*')
