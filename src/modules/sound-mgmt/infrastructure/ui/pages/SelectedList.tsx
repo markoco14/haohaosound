@@ -11,15 +11,20 @@ interface Props {
 
 export async function getServerSideProps(context) {
   const url = context.params.list_url;
-  if (url !== 'freelist' && url !== 'favicon.ico') {
+  if (url !== 'freelist' && url !== 'favicon.ico' && url !== 'manifest.json') {
     try {
       let data = await listAdapter.getList({
         url: context.query.list_url,
       });
 
+      const list = {
+        name: data.name,
+        sounds: data.sounds,
+      };
+
       return {
         props: {
-          list: data,
+          list,
         },
       };
     } catch (error) {

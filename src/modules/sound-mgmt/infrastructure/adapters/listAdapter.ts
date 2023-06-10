@@ -13,10 +13,7 @@ class ListAdapter {
       throw new Error(`Failed to get list by url: ${url}`);
     }
 
-    const list = {
-      name: data[0].list_name,
-      sounds: data,
-    };
+    const list = new List(data[0].list_name, data);
 
     return list;
   }
