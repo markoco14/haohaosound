@@ -1,6 +1,6 @@
 import { localStorageAdapter } from '../../../core/infrastructure/adapters/localStorageAdapter';
+import { supabase } from '../../../core/infrastructure/adapters/supabaseClient';
 import { List } from '../../domain/entities/List';
-import { supabase } from './supabaseClient';
 
 class ListAdapter {
   public async getList({ url }: { url: string }): Promise<List> {
