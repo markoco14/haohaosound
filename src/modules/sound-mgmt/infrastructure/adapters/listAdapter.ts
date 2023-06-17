@@ -18,6 +18,38 @@ class ListAdapter {
     return list;
   }
 
+  public async getListById({ id }: { id: number }): Promise<List> {
+    let { data, error } = await supabase
+      .from('lists')
+      .select(
+        `
+        id,
+        name,
+        list_sounds (
+          sound_id,
+          sounds (
+            name,
+            audio_url
+          )
+        )
+        `
+      )
+      .eq('id', 1)
+      .single();
+
+    // @ts-ignore
+    const sounds = data.list_sounds.map((obj) => obj.sounds);
+
+    if (error) {
+      console.error('Failed to get list by id', { message: error.message });
+      throw new Error(`Failed to get list by id: ${id}`);
+    }
+
+    const list = new List(data.name, sounds);
+
+    return list;
+  }
+
   public getFreeLists(): List[] {
     const data = localStorageAdapter.get('nonUserList');
 

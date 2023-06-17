@@ -1,37 +1,28 @@
 import Head from 'next/head';
-import React, { useRef } from 'react';
-import { supabase } from '../../../../core/infrastructure/adapters/supabaseClient';
+import React, { FC, useRef } from 'react';
+import { List } from '../../../domain/entities/List';
 import { Sound } from '../../../domain/entities/Sound';
+import { listAdapter } from '../../adapters/listAdapter';
 // add server side props
 
+interface Props {
+  list: List;
+}
+
 export async function getServerSideProps(context) {
-  let { data, error } = await supabase
-    .from('lists')
-    .select(
-      `
-		id,
-		name,
-		list_sounds (sound_id, sounds (name, audio_url))
-		`
-    )
-    .eq('id', 1)
-    .single();
+  const list = await listAdapter.getListById({ id: 1 });
 
   return {
     props: {
-      list: data,
+      list: list.toJSON(),
     },
   };
 }
 
-export function Home({ list }) {
-  const sounds = [];
-
-  list.list_sounds.forEach((sound) => sounds.push(sound.sounds));
-
+export const Home: FC<Props> = ({ list }) => {
   const elementRefs = useRef([]);
 
-  sounds.forEach((_, index) => {
+  list.sounds.forEach((_, index) => {
     elementRefs.current[index] = React.createRef();
   });
 
@@ -50,7 +41,7 @@ export function Home({ list }) {
           <h1 className="text-2xl">{list.name}</h1>
         </article>
         <ul className="p-2 flex flex-col gap-4">
-          {sounds.map((sound: Sound, index) => (
+          {list.sounds.map((sound: Sound, index) => (
             <li key={index}>
               <button
                 className="w-full bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
@@ -78,4 +69,4 @@ export function Home({ list }) {
       </section>
     </div>
   );
-}
+};
