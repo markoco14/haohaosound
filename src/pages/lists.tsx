@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../modules/core/infrastructure/adapters/supabaseClient';
 import Spinner from '../modules/sound-mgmt/infrastructure/ui/components/Spinner';
+import { Sound } from '../modules/sound-mgmt/domain/entities/Sound';
 
 export async function getServerSideProps() {
   // TODO: add user session and get user lists
@@ -159,7 +160,7 @@ const EditListModal = ({
         </div>
       ) : (
         <ul className="mb-4 grid grid-cols-3 gap-2">
-          {localList.sounds?.map((sound, index) => (
+          {localList.sounds?.map((sound: Sound, index) => (
             <li
               key={index}
               className="flex justify-between relative bg-slate-500 px-4 py-2"
@@ -200,7 +201,7 @@ const EditListModal = ({
         </p>
       ) : (
         <ul className="mb-4 overflow-y-auto grid grid-cols-2 gap-2 max-h-[400px]">
-          {sounds?.map((sound, index) => (
+          {sounds?.map((sound: Sound, index) => (
             <li
               key={index}
               className={`

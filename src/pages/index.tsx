@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import React, { useRef } from 'react';
 import { supabase } from '../modules/core/infrastructure/adapters/supabaseClient';
+import { Sound } from '../modules/sound-mgmt/domain/entities/Sound';
 // add server side props
 
 export async function getServerSideProps(context) {
@@ -49,7 +50,7 @@ export default function Home({ list }) {
           <h1 className="text-2xl">{list.name}</h1>
         </article>
         <ul className="p-2 flex flex-col gap-4">
-          {sounds.map((sound, index) => (
+          {sounds.map((sound: Sound, index) => (
             <li key={index}>
               <button
                 className="w-full bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"

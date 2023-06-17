@@ -2,6 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import React, { FC, useRef } from 'react';
 import { List } from '../../../domain/entities/List';
+import { Sound } from '../../../domain/entities/Sound';
 import { listAdapter } from '../../adapters/listAdapter';
 import { useList } from '../hooks/useList';
 
@@ -66,7 +67,7 @@ export const SelectedList: FC<Props> = ({ list }) => {
         </article>
         {sounds.length > 0 ? (
           <ul className="p-2 flex flex-col gap-4">
-            {sounds?.map((sound, index) => (
+            {sounds?.map((sound: Sound, index: number) => (
               <li key={index}>
                 <button
                   className="w-full bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
