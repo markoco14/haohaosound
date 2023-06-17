@@ -3,6 +3,7 @@ import React, { FC, useRef } from 'react';
 import { List } from '../../../domain/entities/List';
 import { Sound } from '../../../domain/entities/Sound';
 import { listAdapter } from '../../adapters/listAdapter';
+import { playback } from '../helpers/playback';
 // add server side props
 
 interface Props {
@@ -26,6 +27,10 @@ export const Home: FC<Props> = ({ list }) => {
     elementRefs.current[index] = React.createRef();
   });
 
+  const onClick = (index: number) => {
+    playback(elementRefs, index);
+  };
+
   return (
     <div>
       <Head>
@@ -45,18 +50,7 @@ export const Home: FC<Props> = ({ list }) => {
             <li key={index}>
               <button
                 className="w-full bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
-                onClick={() => {
-                  elementRefs.current.forEach((ref, refIndex) => {
-                    if (refIndex !== index) {
-                      elementRefs.current[refIndex].current.pause();
-                      elementRefs.current[refIndex].current.currentTime = 0;
-                    }
-                  });
-                  if (!elementRefs.current[index].current.paused) {
-                    elementRefs.current[index].current.currentTime = 0;
-                  }
-                  elementRefs.current[index].current.play();
-                }}
+                onClick={() => onClick(index)}
               >
                 {sound.name}
               </button>
