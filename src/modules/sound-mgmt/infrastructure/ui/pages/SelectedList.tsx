@@ -14,18 +14,13 @@ export async function getServerSideProps(context) {
   const url = context.params.list_url;
   if (url !== 'freelist' && url !== 'favicon.ico' && url !== 'manifest.json') {
     try {
-      let data = await listAdapter.getListByUrl({
+      let list = await listAdapter.getListByUrl({
         url: context.query.list_url,
       });
 
-      const list = {
-        name: data.name,
-        sounds: data.sounds,
-      };
-
       return {
         props: {
-          list,
+          list: list.toJSON(),
         },
       };
     } catch (error) {
