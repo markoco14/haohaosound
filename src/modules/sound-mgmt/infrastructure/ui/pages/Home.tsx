@@ -3,6 +3,7 @@ import React, { FC, useRef } from 'react';
 import { List } from '../../../domain/entities/List';
 import { Sound } from '../../../domain/entities/Sound';
 import { listAdapter } from '../../adapters/listAdapter';
+import { SoundButton } from '../components/SoundButton';
 import { playback } from '../helpers/playback';
 // add server side props
 
@@ -23,8 +24,10 @@ export async function getServerSideProps(context) {
 export const Home: FC<Props> = ({ list }) => {
   const elementRefs = useRef([]);
 
+  const refs = list.sounds.map(() => React.createRef());
+
   list.sounds.forEach((_, index) => {
-    elementRefs.current[index] = React.createRef();
+    elementRefs.current[index] = refs[index];
   });
 
   const onClick = (index: number) => {
@@ -48,15 +51,11 @@ export const Home: FC<Props> = ({ list }) => {
         <ul className="p-2 flex flex-col gap-4">
           {list.sounds.map((sound: Sound, index) => (
             <li key={index}>
-              <button
-                className="w-full bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
-                onClick={() => onClick(index)}
-              >
-                {sound.name}
-              </button>
-              <audio ref={elementRefs.current[index]} src={sound.audio_url}>
-                Your browser does not support the <code>audio</code> element.
-              </audio>
+              <SoundButton
+                ref={refs[index]}
+                sound={sound}
+                playback={() => onClick(index)}
+              />
             </li>
           ))}
         </ul>
