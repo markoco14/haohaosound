@@ -1,10 +1,8 @@
 import Head from 'next/head';
-import React, { FC, useRef } from 'react';
+import { FC } from 'react';
 import { List } from '../../../domain/entities/List';
-import { Sound } from '../../../domain/entities/Sound';
 import { listAdapter } from '../../adapters/listAdapter';
-import { SoundButton } from '../components/SoundButton';
-import { playback } from '../helpers/playback';
+import { ListDetails } from '../components/ListDetails';
 // add server side props
 
 interface Props {
@@ -22,18 +20,6 @@ export async function getServerSideProps(context) {
 }
 
 export const Home: FC<Props> = ({ list }) => {
-  const elementRefs = useRef([]);
-
-  const refs = list.sounds.map(() => React.createRef());
-
-  list.sounds.forEach((_, index) => {
-    elementRefs.current[index] = refs[index];
-  });
-
-  const onClick = (index: number) => {
-    playback(elementRefs, index);
-  };
-
   return (
     <div>
       <Head>
@@ -45,20 +31,7 @@ export const Home: FC<Props> = ({ list }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <section>
-        <article className="p-2">
-          <h1 className="text-2xl">{list.name}</h1>
-        </article>
-        <ul className="p-2 flex flex-col gap-4">
-          {list.sounds.map((sound: Sound, index) => (
-            <li key={index}>
-              <SoundButton
-                ref={refs[index]}
-                sound={sound}
-                playback={() => onClick(index)}
-              />
-            </li>
-          ))}
-        </ul>
+        <ListDetails list={list} />
       </section>
     </div>
   );
