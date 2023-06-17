@@ -3,7 +3,7 @@ import { supabase } from '../../../core/infrastructure/adapters/supabaseClient';
 import { List } from '../../domain/entities/List';
 
 class ListAdapter {
-  public async getList({ url }: { url: string }): Promise<List> {
+  public async getListByUrl({ url }: { url: string }): Promise<List> {
     let { data, error } = await supabase.rpc('get_list_by_url', {
       list_url: url,
     });

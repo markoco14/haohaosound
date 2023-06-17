@@ -14,7 +14,7 @@ export async function getServerSideProps(context) {
   const url = context.params.list_url;
   if (url !== 'freelist' && url !== 'favicon.ico' && url !== 'manifest.json') {
     try {
-      let data = await listAdapter.getList({
+      let data = await listAdapter.getListByUrl({
         url: context.query.list_url,
       });
 
