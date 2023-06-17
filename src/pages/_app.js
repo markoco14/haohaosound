@@ -1,15 +1,15 @@
 import { Toaster } from 'react-hot-toast'
 import '../styles/globals.css'
-import Layout from '../components/Layout';
+import Layout from '../modules/sound-mgmt/infrastructure/ui/components/Layout';
 
 function MyApp({ Component, pageProps }) {
   return (
     <Layout>
       <Component {...pageProps} />
       <Toaster  />
-    </Layout>    
+    </Layout>
   )
-  
+
 }
 
 export default MyApp
