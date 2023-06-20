@@ -8,7 +8,7 @@ interface Props {
   playback(): void;
 }
 
-export const SoundButton: FC<Props> = forwardRef(({ sound, playback }, ref) => {
+export const SoundButton: FC<Props> = forwardRef<HTMLAudioElement, Props>(({ sound, playback }, ref) => {
   return (
     <>
       <button
