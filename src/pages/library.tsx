@@ -2,13 +2,14 @@ import Head from 'next/head';
 import React, { useRef } from 'react';
 import { supabase } from '../modules/core/infrastructure/adapters/supabaseClient';
 import { Sound } from '../modules/sound-mgmt/domain/entities/Sound';
+import { soundAdapter } from '../modules/sound-mgmt/infrastructure/adapters/soundAdapter';
 
 export async function getServerSideProps() {
-  let { data, error } = await supabase.from('sounds').select('*');
+  const sounds = await soundAdapter.getAllSounds();
 
   return {
     props: {
-      sounds: data,
+      sounds: sounds,
     },
   };
 }
