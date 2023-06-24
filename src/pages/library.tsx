@@ -1,25 +1,37 @@
 import Head from 'next/head';
-import React, { useRef } from 'react';
-import { supabase } from '../modules/core/infrastructure/adapters/supabaseClient';
+import { createRef, useRef } from 'react';
 import { Sound } from '../modules/sound-mgmt/domain/entities/Sound';
 import { soundAdapter } from '../modules/sound-mgmt/infrastructure/adapters/soundAdapter';
+import { SoundButton } from '../modules/sound-mgmt/infrastructure/ui/components/SoundButton';
+import { playback } from '../modules/sound-mgmt/infrastructure/ui/helpers/playback';
 
 export async function getServerSideProps() {
   const sounds = await soundAdapter.getAllSounds();
 
+  // TODO: move this logic into the adapter
+  // might need to change from Sound type to List type
   return {
     props: {
-      sounds: sounds,
+      library: {
+        name: "聲音庫",
+        sounds: sounds
+      }
     },
   };
 }
 
-export default function Library({ sounds }) {
+export default function Library({ library }) {
   const elementRefs = useRef([]);
 
-  sounds.forEach((_, index) => {
-    elementRefs.current[index] = React.createRef();
+  const refs = library.sounds?.map(() => createRef());
+
+  library.sounds?.forEach((_, index) => {
+    elementRefs.current[index] = refs[index];
   });
+
+  const onClick = (index: number) => {
+    playback(elementRefs, index);
+  };
 
   return (
     <div>
@@ -32,32 +44,17 @@ export default function Library({ sounds }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <article className="p-2">
-        <h1 className="text-2xl">所有的聲音</h1>
+        <h1 className="text-2xl">{library.name}</h1>
       </article>
       <section>
         <ul className="p-2 flex flex-col gap-4">
-          {sounds.map((sound: Sound, index) => (
+          {library.sounds?.map((sound: Sound, index) => (
             <li key={index}>
-              <button
-                className="w-full bg-rose-500 p-4 active:scale-95 active:bg-rose-900 active:rounded-md ease-in-out duration-200 hover:bg-rose-700 rounded-md"
-                onClick={() => {
-                  elementRefs.current.forEach((ref, refIndex) => {
-                    if (refIndex !== index) {
-                      elementRefs.current[refIndex].current.pause();
-                      elementRefs.current[refIndex].current.currentTime = 0;
-                    }
-                  });
-                  if (!elementRefs.current[index].current.paused) {
-                    elementRefs.current[index].current.currentTime = 0;
-                  }
-                  elementRefs.current[index].current.play();
-                }}
-              >
-                {sound.name}
-              </button>
-              <audio ref={elementRefs.current[index]} src={sound.audio_url}>
-                Your browser does not support the <code>audio</code> element.
-              </audio>
+              <SoundButton 
+                ref={refs[index]}
+                sound={sound}
+                playback={() => onClick(index)}
+              />
             </li>
           ))}
         </ul>
